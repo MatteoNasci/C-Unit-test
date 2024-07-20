@@ -1,0 +1,282 @@
+#pragma once
+#ifndef _H_MLN_TESTS_UTEST_H_
+#define _H_MLN_TESTS_UTEST_H_
+
+#include <stdio.h>
+#include "internal_utest.h"
+
+typedef struct test_data{
+    size_t passes;
+    size_t fails;
+    size_t skips;
+    char* logs;
+    size_t logs_size;
+    size_t logs_length;
+} mln_test_data;
+
+/*
+To be used once at the beginning of the function/main where all the tests will be performed
+Starting point of the testing procedure
+*/
+#define MLN_PRE_TESTS           \
+    size_t __mln_total_passes = 0;\
+    size_t __mln_total_fails = 0;\
+    size_t __mln_total_skips = 0;\
+    size_t __mln_current_test_count = 0;\
+    size_t __mln_total_test_passes = 0;\
+    size_t __mln_total_test_fails = 0;\
+    size_t __mln_total_test_skips = 0;\
+    mln_test_data __mln_data;\
+    __mln_data.logs = NULL;\
+    __MLN_RESET_DATA(__mln_data) 
+
+/*
+To be used once at the end of the function/main where all the tests will be performed
+Ending point of the testing procedure
+*/
+#define MLN_POST_TESTS          \
+    const size_t __mln_total_results = __mln_total_passes + __mln_total_fails + __mln_total_skips;\
+    const size_t __mln_total_test_results = __mln_total_test_passes + __mln_total_test_fails + __mln_total_test_skips;\
+    printf("Tests over. Results...\n");\
+    printf("Tests passed: %zu/%zu. Total asserts passed: %zu/%zu\n", __mln_total_test_passes, __mln_total_test_results, __mln_total_passes, __mln_total_results);\
+    printf("Tests skiped: %zu/%zu. Total asserts skipped: %zu/%zu\n", __mln_total_test_skips, __mln_total_test_results, __mln_total_skips, __mln_total_results);\
+    printf("Tests failed: %zu/%zu. Total asserts failed: %zu/%zu\n", __mln_total_test_fails, __mln_total_test_results, __mln_total_fails, __mln_total_results);\
+    printf("Tests failed percentage: %Lf%%, Asserts failed percentage: %Lf%% \n", \
+    ((long double)(__mln_total_test_fails) / __mln_total_test_results) * 100.0, \
+    ((long double)(__mln_total_fails) / __mln_total_results) * 100.0);\
+    printf("Press any keys to close...\n");\
+    getchar();
+
+/*
+To be used when performing the tests. The func_name must have a matching MLN_DEFINE_TEST(func_name)
+*/
+#define MLN_RUN_TEST(func_name) \
+    func_name(&__mln_data);\
+    __mln_current_test_count++;\
+    __mln_total_passes += __mln_data.passes;\
+    __mln_total_skips += __mln_data.skips;\
+    __mln_total_fails += __mln_data.fails;\
+    if(__mln_data.fails != 0){\
+        __mln_total_test_fails++;\
+    }else if(__mln_data.skips != 0){\
+        __mln_total_test_skips++;\
+    }else if(__mln_data.passes != 0){\
+        __mln_total_test_passes++;\
+    }\
+    printf("Test n.%zu completed. %s\n", __mln_current_test_count, __mln_data.fails == 0 ? "\0" : "Failure!\0");\
+    if(__mln_data.fails != 0){\
+        printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", __mln_data.passes, __mln_data.skips, __mln_data.fails);\
+    }\
+    if(__mln_data.logs_length > 0){\
+        printf("%s: %s\n", #func_name, __mln_data.logs);\
+    }\
+    __MLN_RESET_DATA(__mln_data)    
+
+/*
+To be used to define test functions. The arguments are the function name and the body of the function.
+Example:
+MLN_DEFINE_TEST(my_test,
+    int a = 0;
+    int b = 0;
+    ASSERT_EQ(a, 0)
+    ASSERT_EQ(b, 1)
+)
+*/
+#define MLN_TEST(func_name, ...) \
+    void func_name(mln_test_data* __mln_out_test_data){\
+    __VA_ARGS__\
+    }
+
+//
+//BYPASSES
+//
+
+/*
+Can be used inside a test, will automatically fail the current test and stop the execution
+*/
+#define FAIL() \
+    FAILm(__MLN_DEFAULT_FAIL_MSG)
+
+#define FAILm(msg) \
+    __mln_out_test_data->fails++;\
+    __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
+    return;
+
+/*
+Can be used inside a test, will automatically pass the current test and stop the execution
+*/
+#define PASS() \
+    __mln_out_test_data->passes++;\
+    return;
+
+/*
+Can be used inside a test, will automatically skip the current test and stop the execution
+*/
+#define SKIP() \
+    SKIPm(__MLN_DEFAULT_FAIL_MSG)
+
+#define SKIPm(msg) \
+    __mln_out_test_data->skips++;\
+    __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
+    return;
+//
+//ASSERTS
+//
+
+/*Failing an assertion will stop the execution of the current test and will result in a failed test. 
+All assertions have a message variant, which logs a string message in case of a fail.*/
+
+/*
+Assert that condition evaluates as a true value (non zero)
+*/
+#define MLN_ASSERT(condition)   \
+    MLN_ASSERTm(condition, __MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERTm(condition, msg)   \
+    if(condition){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+Assert that condition evaluates as a false value (zero)
+*/
+#define MLN_ASSERT_FALSE(condition)   \
+    MLN_ASSERT_FALSEm(condition, __MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_FALSEm(condition, msg)   \
+    if(!condition){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+Assert that expected == actual_value
+*/
+#define MLN_ASSERT_EQ(expected, actual_value)   \
+    MLN_ASSERT_EQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_EQm(expected, actual_value, msg)   \
+    if(expected == actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+Assert that expected == actual_value, if they are not equal then the 2 arguments will be printed out based on the given format (printf)
+*/
+#define MLN_ASSERT_EQ_FORMAT(expected, actual_value, format)   \
+    MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, __MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, msg)   \
+    if(expected == actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        printf("Expected value: ");\
+        printf(#format, expected);\
+        printf(", actual value: ");\
+        printf(#format, actual_value);\
+        printf("\n");\
+        FAILm(msg) \
+    }
+
+/*
+Assert that expected != actual_value
+*/
+#define MLN_ASSERT_NEQ(expected, actual_value)   \
+    MLN_ASSERT_NEQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_NEQm(expected, actual_value, msg)   \
+    if(expected != actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+    
+/*
+Assert that expected > actual_value
+*/
+#define MLN_ASSERT_GT(expected, actual_value)   \
+    MLN_ASSERT_GTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+
+#define MLN_ASSERT_GTm(expected, actual_value, msg)   \
+    if(expected > actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+Assert that expected >= actual_value
+*/
+#define MLN_ASSERT_GTE(expected, actual_value)   \
+    MLN_ASSERT_GTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+
+#define MLN_ASSERT_GTEm(expected, actual_value, msg)   \
+    if(expected >= actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+Assert that expected < actual_value
+*/
+#define MLN_ASSERT_LT(expected, actual_value)   \
+    MLN_ASSERT_LTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+
+#define MLN_ASSERT_LTm(expected, actual_value, msg)   \
+    if(expected < actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+Assert that expected <= actual_value
+*/
+#define MLN_ASSERT_LTE(expected, actual_value)   \
+    MLN_ASSERT_LTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+
+#define MLN_ASSERT_LTEm(expected, actual_value, msg)   \
+    if(expected <= actual_value){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
+
+/*
+
+ASSERT_IN_RANGE(EXPECTED, ACTUAL, TOLERANCE)
+Assert that ACTUAL is within EXPECTED +/- TOLERANCE, once the values have been converted to a configurable floating point type (GREATEST_FLOAT).
+
+greatest does not depent on floating point math. It is only used within ASSERT_IN_RANGE's macro expansion.
+
+ASSERT_STR_EQ(EXPECTED, ACTUAL)
+Assert that the strings are equal (i.e., strcmp(EXPECTED, ACTUAL) == 0).
+
+ASSERT_STRN_EQ(EXPECTED, ACTUAL, SIZE)
+Assert that the first SIZE bytes of the strings are equal (i.e., strncmp(EXPECTED, ACTUAL, SIZE) == 0).
+
+ASSERT_MEM_EQ(EXPECTED, ACTUAL, SIZE)
+Assert that the first SIZE bytes of memory pointed to by EXPECTED and ACTUAL are equal. If their memory differs, print a hexdump and highlight the lines and individual bytes which do not match.
+
+ASSERT_ENUM_EQ(EXPECTED, ACTUAL, ENUM_STR_FUN)
+Assert that the enum value EXPECTED is equal to ACTUAL. If not, convert each enum value to a string using ENUM_STR_FUN before printing them.
+
+ENUM_STR_FUN should have a type like:
+
+const char *FUN(int x);
+ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
+Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
+
+ASSERT_OR_LONGJMP(COND)
+Assert that COND evaluates to a true value. If not, then use longjmp(3) to immediately return from the test case and any intermediate function calls.
+
+If built with GREATEST_USE_LONGJMP #defined to 0, then all setjmp/longjmp-related functionality will be compiled out. This also reduces memory usage by sizeof jmp_buf, which may be several hundred bytes, depending on the platform.
+*/
+
+#endif
