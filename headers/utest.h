@@ -48,7 +48,8 @@ Ending point of the testing procedure
     getchar();
 
 /*
-To be used when performing the tests. The func_name must have a matching MLN_DEFINE_TEST(func_name)
+To be used when performing the tests. The func_name must have a matching MLN_TEST(func_name)
+MLN_PRE_TESTS must appear once before any tests can be executed
 */
 #define MLN_RUN_TEST(func_name) \
     func_name(&__mln_data);\
@@ -78,8 +79,8 @@ Example:
 MLN_DEFINE_TEST(my_test,
     int a = 0;
     int b = 0;
-    ASSERT_EQ(a, 0)
-    ASSERT_EQ(b, 1)
+    MLN_ASSERT_EQ(a, 0)
+    MLN_ASSERT_NEQ(b, 1)
 )
 */
 #define MLN_TEST(func_name, ...) \
@@ -90,6 +91,8 @@ MLN_DEFINE_TEST(my_test,
 //
 //BYPASSES
 //
+
+/*All Bypasses must be used inside a MLN_TEST*/
 
 /*
 Can be used inside a test, will automatically fail the current test and stop the execution
@@ -124,7 +127,8 @@ Can be used inside a test, will automatically skip the current test and stop the
 //
 
 /*Failing an assertion will stop the execution of the current test and will result in a failed test. 
-All assertions have a message variant, which logs a string message in case of a fail.*/
+All assertions have a message variant, which logs a string message in case of a fail.
+All Assertions must be used inside a MLN_TEST*/
 
 /*
 Assert that condition evaluates as a true value (non zero)
@@ -249,11 +253,20 @@ Assert that expected <= actual_value
     }
 
 /*
+Assert that expected - tollerance <= actual_value <= expected + tollerance
+*/
+#define MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance)   \
+    MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, __MLN_DEFAULT_FAIL_MSG) \
 
-ASSERT_IN_RANGE(EXPECTED, ACTUAL, TOLERANCE)
-Assert that ACTUAL is within EXPECTED +/- TOLERANCE, once the values have been converted to a configurable floating point type (GREATEST_FLOAT).
+#define MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg)   \
+    if((expected - tollerance <= actual_value) && (expected + tollerance >= actual_value)){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        FAILm(msg) \
+    }
 
-greatest does not depent on floating point math. It is only used within ASSERT_IN_RANGE's macro expansion.
+/*
+TODO
 
 ASSERT_STR_EQ(EXPECTED, ACTUAL)
 Assert that the strings are equal (i.e., strcmp(EXPECTED, ACTUAL) == 0).
@@ -270,13 +283,9 @@ Assert that the enum value EXPECTED is equal to ACTUAL. If not, convert each enu
 ENUM_STR_FUN should have a type like:
 
 const char *FUN(int x);
+
 ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
 Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
-
-ASSERT_OR_LONGJMP(COND)
-Assert that COND evaluates to a true value. If not, then use longjmp(3) to immediately return from the test case and any intermediate function calls.
-
-If built with GREATEST_USE_LONGJMP #defined to 0, then all setjmp/longjmp-related functionality will be compiled out. This also reduces memory usage by sizeof jmp_buf, which may be several hundred bytes, depending on the platform.
 */
 
 #endif
