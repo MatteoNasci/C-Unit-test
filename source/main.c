@@ -23,6 +23,8 @@ TEST(testing_passes ,
     ASSERT_IN_RANGE(0, 0.001, 0.01)
     ASSERT_IN_RANGEm(3, -1, 5, "msg")
     ASSERT_STRN_EQ("a", "a", 1)
+    ASSERT_STRN_EQm("", "", 1, "msg")
+    ASSERT_STRN_EQm("", "", 0, "msg")
     ASSERT_STRN_EQm("expected", "expected fasf", 8, "msg")
     ASSERT_STRN_NEQ("expected", "expected fasf", 9)
     ASSERT_STRN_NEQm("446", "actual_value", 3, "msg")
@@ -69,6 +71,8 @@ TEST(testing_passes_prefix ,
     MLN_ASSERT_IN_RANGE(0, 0.001, 0.01)
     MLN_ASSERT_IN_RANGEm(3, -1, 5, "msg")
     MLN_ASSERT_STRN_EQ("a", "a", 1)
+    MLN_ASSERT_STRN_EQm("", "", 1, "msg")
+    MLN_ASSERT_STRN_EQm("", "", 0, "msg")
     MLN_ASSERT_STRN_EQm("expected", "expected fasf", 8, "msg")
     MLN_ASSERT_STRN_NEQ("expected", "expected fasf", 9)
     MLN_ASSERT_STRN_NEQm("446", "actual_value", 3, "msg")
@@ -139,17 +143,31 @@ int main(int argc, char**argv){
 
     PRE_TESTS
 
+    //Needs to pass
     RUN_TEST(testing_passes)
+    //Needs to pass
     RUN_TEST(testing_passes_prefix)
+    //Needs to pass
     RUN_TEST(testing_bypass_pass)
+    //Needs to pass
     RUN_TEST(testing_bypass_pass_prefix)
+
+    //Needs to skip
     RUN_TEST(testing_bypass_skip)
+    //Needs to skip
     RUN_TEST(testing_bypass_skip_prefix)
+    //Needs to skip
     RUN_TEST(testing_bypass_skipm)
+    //Needs to skip
     RUN_TEST(testing_bypass_skipm_prefix)
+
+    //Needs to fail
     RUN_TEST(testing_bypass_fail)
+    //Needs to fail
     RUN_TEST(testing_bypass_fail_prefix)
+    //Needs to fail
     RUN_TEST(testing_bypass_failm)
+    //Needs to fail
     RUN_TEST(testing_bypass_failm_prefix)
 
     POST_TESTS
