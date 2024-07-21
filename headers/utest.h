@@ -112,7 +112,7 @@ To be used when performing the tests. The func_name must have a matching MLN_TES
 MLN_PRE_TESTS must appear once before any tests can be executed
 */
 #define MLN_RUN_TEST(func_name) \
-    func_name(&__mln_data);\
+    __mln_test_##func_name(&__mln_data);\
     __mln_current_test_count++;\
     __mln_total_passes += __mln_data.passes;\
     __mln_total_skips += __mln_data.skips;\
@@ -144,7 +144,7 @@ MLN_DEFINE_TEST(my_test,
 )
 */
 #define MLN_TEST(func_name, ...) \
-    void func_name(mln_test_data* __mln_out_test_data){\
+    void __mln_test_##func_name(mln_test_data* __mln_out_test_data){\
     __VA_ARGS__\
     }
 
