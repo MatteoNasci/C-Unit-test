@@ -112,6 +112,7 @@ To be used when performing the tests. The func_name must have a matching MLN_TES
 MLN_PRE_TESTS must appear once before any tests can be executed
 */
 #define MLN_RUN_TEST(func_name) \
+    printf("Testing n.%zu function [%s]...\n", __mln_current_test_count + 1, #func_name);\
     __mln_test_##func_name(&__mln_data);\
     __mln_current_test_count++;\
     __mln_total_passes += __mln_data.passes;\
@@ -125,9 +126,8 @@ MLN_PRE_TESTS must appear once before any tests can be executed
         __mln_total_test_passes++;\
     }\
     if(__mln_data.logs_length > 0){\
-        printf("%s%s: %s\n", "Function ", #func_name, __mln_data.logs);\
+        printf("%s\n", __mln_data.logs);\
     }\
-    printf("Test n.%zu completed. %s\n", __mln_current_test_count, __mln_data.fails == 0 ? "\0" : "Failure!\0");\
     if(__mln_data.fails != 0){\
         printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", __mln_data.passes, __mln_data.skips, __mln_data.fails);\
     }\
