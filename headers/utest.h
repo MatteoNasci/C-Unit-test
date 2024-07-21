@@ -98,10 +98,10 @@ MLN_DEFINE_TEST(my_test,
 /*
 Can be used inside a test, will automatically fail the current test and stop the execution
 */
-#define FAIL() \
-    FAILm(__MLN_DEFAULT_FAIL_MSG)
+#define MLN_FAIL() \
+    MLN_FAILm(__MLN_DEFAULT_FAIL_MSG)
 
-#define FAILm(msg) \
+#define MLN_FAILm(msg) \
     __mln_out_test_data->fails++;\
     __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
     return;
@@ -109,17 +109,17 @@ Can be used inside a test, will automatically fail the current test and stop the
 /*
 Can be used inside a test, will automatically pass the current test and stop the execution
 */
-#define PASS() \
+#define MLN_PASS() \
     __mln_out_test_data->passes++;\
     return;
 
 /*
 Can be used inside a test, will automatically skip the current test and stop the execution
 */
-#define SKIP() \
-    SKIPm(__MLN_DEFAULT_FAIL_MSG)
+#define MLN_SKIP() \
+    MLN_SKIPm(__MLN_DEFAULT_FAIL_MSG)
 
-#define SKIPm(msg) \
+#define MLN_SKIPm(msg) \
     __mln_out_test_data->skips++;\
     __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
     return;
