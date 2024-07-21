@@ -143,6 +143,8 @@ int main(int argc, char**argv){
 
     PRE_TESTS
 
+    SET_LOGS_VERBOSITY(2)
+
     //Needs to pass
     RUN_TEST(testing_passes)
     //Needs to pass

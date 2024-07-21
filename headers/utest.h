@@ -18,6 +18,7 @@ typedef struct test_data{
 /*If MLN_REMOVE_TESTS_PREFIXES is defined it exposes test macro variants without the MLN_ prefix*/
 #ifdef MLN_REMOVE_TESTS_PREFIXES
 
+    #define SET_LOGS_VERBOSITY(verbosity) MLN_SET_LOGS_VERBOSITY(verbosity)
     #define PRE_TESTS MLN_PRE_TESTS
     #define POST_TESTS MLN_POST_TESTS
     #define RUN_TEST(func_name) MLN_RUN_TEST(func_name)
@@ -79,6 +80,7 @@ To be used once at the beginning of the function/main where all the tests will b
 Starting point of the testing procedure
 */
 #define MLN_PRE_TESTS           \
+    size_t __mln_verbosity = 0;\
     size_t __mln_total_passes = 0;\
     size_t __mln_total_fails = 0;\
     size_t __mln_total_skips = 0;\
@@ -112,8 +114,11 @@ To be used when performing the tests. The func_name must have a matching MLN_TES
 MLN_PRE_TESTS must appear once before any tests can be executed
 */
 #define MLN_RUN_TEST(func_name) \
-    printf("Testing n.%zu function [%s]...\n", __mln_current_test_count + 1, #func_name);\
-    __mln_test_##func_name(&__mln_data);\
+    {\
+    if(__mln_verbosity >= 2){\
+        printf("Testing n.%zu function [%s]...\n", __mln_current_test_count + 1, #func_name);\
+    }\
+    __mln_test_##func_name(&__mln_data, __mln_verbosity);\
     __mln_current_test_count++;\
     __mln_total_passes += __mln_data.passes;\
     __mln_total_skips += __mln_data.skips;\
@@ -125,14 +130,20 @@ MLN_PRE_TESTS must appear once before any tests can be executed
     }else if(__mln_data.passes != 0){\
         __mln_total_test_passes++;\
     }\
+    bool __mln_logs_used = false;\
     if(__mln_data.logs_length > 0){\
         printf("%s\n", __mln_data.logs);\
+        __mln_logs_used = true;\
     }\
-    if(__mln_data.fails != 0){\
+    if(__mln_data.fails != 0 && __mln_verbosity > 0){\
         printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", __mln_data.passes, __mln_data.skips, __mln_data.fails);\
+        __mln_logs_used = true;\
     }\
-    printf("\n");\
-    __MLN_RESET_DATA(__mln_data)    
+    if(__mln_logs_used){\
+        printf("\n");\
+    }\
+    __MLN_RESET_DATA(__mln_data)\
+    }
 
 /*
 To be used to define test functions. The arguments are the function name and the body of the function.
@@ -145,8 +156,25 @@ MLN_DEFINE_TEST(my_test,
 )
 */
 #define MLN_TEST(func_name, ...) \
-    void __mln_test_##func_name(mln_test_data* __mln_out_test_data){\
+    void __mln_test_##func_name(mln_test_data* __mln_out_test_data, const size_t __mln_verbosity){\
     __VA_ARGS__\
+    }
+
+/*
+Sets the level of verbosity of the tests logs. 
+0 = only minimum fails logs
+1 = fails logs, minimum skip and pass logs
+2 = all logs
+verbosity might be evaluated multiple times in this macro
+MLN_PRE_TESTS must appear once before this MACRO can be used
+*/
+#define MLN_SET_LOGS_VERBOSITY(verbosity)\
+    if(verbosity <= 0){\
+        __mln_verbosity = 0;\
+    }else if(verbosity >= 2){\
+        __mln_verbosity = 2;\
+    }else{\
+        __mln_verbosity = 1;\
     }
 
 //
@@ -168,7 +196,7 @@ Can be used inside a test, will automatically fail the current test and stop the
     const char* __mln_format_string = format;\
     const size_t __mln_format_size = sizeof __mln_format_string;\
     printf(#assert_failed " failed! ");\
-    if(__mln_format_size >= 2)\
+    if(__mln_format_size >= 2 && __mln_verbosity > 0)\
     {\
         printf("Expected [");\
         printf(__mln_format_string, expected);\
@@ -195,7 +223,9 @@ Can be used inside a test, will automatically skip the current test and stop the
 
 #define MLN_SKIPm(msg) \
     __mln_out_test_data->skips++;\
-    __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
+    if(__mln_verbosity > 0){\
+        __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
+    }\
     return;
 //
 //ASSERTS
