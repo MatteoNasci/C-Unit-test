@@ -430,13 +430,6 @@ TODO
 ASSERT_MEM_EQ(EXPECTED, ACTUAL, SIZE)
 Assert that the first SIZE bytes of memory pointed to by EXPECTED and ACTUAL are equal. If their memory differs, print a hexdump and highlight the lines and individual bytes which do not match.
 
-ASSERT_ENUM_EQ(EXPECTED, ACTUAL, ENUM_STR_FUN)
-Assert that the enum value EXPECTED is equal to ACTUAL. If not, convert each enum value to a string using ENUM_STR_FUN before printing them.
-
-ENUM_STR_FUN should have a type like:
-
-const char *FUN(int x);
-
 ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
 Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
 */
