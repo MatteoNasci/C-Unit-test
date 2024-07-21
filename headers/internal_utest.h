@@ -35,8 +35,8 @@ Collection of internal defines/functions, not designed to be used by the final u
     if(__mln_msg_sizeof > 1){\
         const size_t __mln_msg_size = __mln_msg_sizeof - 1;\
     \
-        if(logs_length + __mln_msg_size >= logs_size){\
-            __MLN_RESIZE_LOGS(logs_name, logs_length, logs_size) \
+        if(logs_length + __mln_msg_sizeof >= logs_size){\
+            __MLN_RESIZE_LOGS(logs_name, logs_length, logs_size, logs_length + __mln_msg_sizeof) \
         }\
     \
         const size_t __mln_starting_index = logs_length == 0 ? 0 : logs_length - 1;\
@@ -53,13 +53,16 @@ Collection of internal defines/functions, not designed to be used by the final u
     }\
     }
 
-#define __MLN_RESIZE_LOGS(logs_name, logs_length, logs_size) \
+#define __MLN_RESIZE_LOGS(logs_name, logs_length, logs_size, min_size) \
     {\
     if(logs_size == 0){\
-        logs_size = 128;\
+        logs_size = min_size;\
         logs_name = malloc(logs_size);\
     }else{\
-        logs_size = logs_size * 2;\
+        while(logs_size < min_size){\
+            logs_size = logs_size * 2;\
+        }\
+        \
         char* __mln_new_logs = malloc(logs_size);\
         memcpy(__mln_new_logs, logs_name, logs_length);\
         free(logs_name);\
