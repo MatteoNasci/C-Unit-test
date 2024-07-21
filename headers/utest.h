@@ -125,12 +125,13 @@ MLN_PRE_TESTS must appear once before any tests can be executed
         __mln_total_test_passes++;\
     }\
     if(__mln_data.logs_length > 0){\
-        printf("%s%s: %s\n", "Function: ", #func_name, __mln_data.logs);\
+        printf("%s%s: %s\n", "Function ", #func_name, __mln_data.logs);\
     }\
     printf("Test n.%zu completed. %s\n", __mln_current_test_count, __mln_data.fails == 0 ? "\0" : "Failure!\0");\
     if(__mln_data.fails != 0){\
         printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", __mln_data.passes, __mln_data.skips, __mln_data.fails);\
     }\
+    printf("\n");\
     __MLN_RESET_DATA(__mln_data)    
 
 /*
@@ -169,10 +170,11 @@ Can be used inside a test, will automatically fail the current test and stop the
     printf(#assert_failed " failed! ");\
     if(__mln_format_size >= 2)\
     {\
-        printf("Expected: ");\
+        printf("Expected [");\
         printf(__mln_format_string, expected);\
-        printf(" Actual: ");\
+        printf("] Actual [");\
         printf(__mln_format_string, actual);\
+        printf("]");\
     }\
     printf("\n");\
     }\
@@ -189,7 +191,7 @@ Can be used inside a test, will automatically pass the current test and stop the
 Can be used inside a test, will automatically skip the current test and stop the execution
 */
 #define MLN_SKIP() \
-    MLN_SKIPm(__MLN_DEFAULT_FAIL_MSG)
+    MLN_SKIPm(__MLN_DEFAULT_SKIP_MSG)
 
 #define MLN_SKIPm(msg) \
     __mln_out_test_data->skips++;\
@@ -441,6 +443,10 @@ Assert that the first SIZE bytes of memory pointed to by EXPECTED and ACTUAL are
 
 ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
 Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
+
+Add timing stuff and logging
+
+Add possibility to reduce logging
 */
 
 #endif
