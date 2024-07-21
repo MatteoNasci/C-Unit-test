@@ -70,33 +70,33 @@ Collection of internal defines/functions, not designed to be used by the final u
     }\
     }
 
-#define __MLN_DEFAULT_ASSERTm(expected, actual_value, msg, boolean_operation) \
+#define __MLN_DEFAULT_ASSERTm(expected, actual_value, msg, boolean_operation, assert_failed) \
     {\
     const bool __mln_result = expected boolean_operation actual_value;\
     if(__mln_result){\
         __mln_out_test_data->passes++;\
     }else{\
-        MLN_FAILm(msg, #expected, #actual_value, "%s") \
+        MLN_FAILm(msg, #expected, #actual_value, "%s", ##assert_failed) \
     }\
     }
 
-#define __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, boolean_operation)   \
+#define __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, boolean_operation, assert_failed)   \
     {\
     const bool __mln_expected = strncmp(expected, actual_value, size) boolean_operation 0;\
     if(__mln_expected){\
         __mln_out_test_data->passes++;\
     }else{\
-        MLN_FAILm(msg, expected, actual_value, "%s") \
+        MLN_FAILm(msg, expected, actual_value, "%s", ##assert_failed) \
     }\
     }
 
-#define __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, boolean_operation)   \
+#define __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, boolean_operation, assert_failed)   \
     {\
     const bool __mln_expected = strcmp(expected, actual_value) boolean_operation 0;\
     if(__mln_expected){\
         __mln_out_test_data->passes++;\
     }else{\
-        MLN_FAILm(msg, expected, actual_value, "%s") \
+        MLN_FAILm(msg, expected, actual_value, "%s", ##assert_failed) \
     }\
     }
 
