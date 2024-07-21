@@ -21,7 +21,7 @@ typedef struct test_data{
     #define PRE_TESTS MLN_PRE_TESTS
     #define POST_TESTS MLN_POST_TESTS
     #define RUN_TEST(func_name) MLN_RUN_TEST(func_name)
-    #define TEST(func_name, ...) MLN_TEST(func_name, ...)
+    #define TEST(func_name, ...) MLN_TEST(func_name, __VA_ARGS__)
     #define FAIL() MLN_FAIL()
     #define FAILm(msg, expected, actual, format, assert_failed) MLN_FAILm(msg, expected, actual, format, assert_failed)
     #define PASS() MLN_PASS()
