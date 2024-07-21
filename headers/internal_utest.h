@@ -18,6 +18,11 @@ Collection of internal defines/functions, not designed to be used by the final u
 #define __MLN_DEFAULT_FAIL_MSG_A "Failed in " __FILE__ 
 #define __MLN_DEFAULT_FAIL_MSG_B " at line " __MLN_STRINGIFY_NX(__LINE__)
 
+#define __MLN_DEFAULT_SKIP_MSG __MLN_DEFAULT_SKIP_MSG_C
+#define __MLN_DEFAULT_SKIP_MSG_C __MLN_DEFAULT_SKIP_MSG_A __MLN_DEFAULT_SKIP_MSG_B
+#define __MLN_DEFAULT_SKIP_MSG_A "Skipped in " __FILE__ 
+#define __MLN_DEFAULT_SKIP_MSG_B " at line " __MLN_STRINGIFY_NX(__LINE__)
+
 #define __MLN_RESET_DATA(data_name)        \
     if(data_name.logs != NULL){\
         free(data_name.logs);\
