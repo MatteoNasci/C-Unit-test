@@ -253,7 +253,7 @@ Expected and actual_value might be evaluated more than once
 
 #define MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg)   \
     {\
-    const bool __mln_result = (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value);
+    const bool __mln_result = (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value);\
     if(__mln_result){\
         __mln_out_test_data->passes++;\
     }else{\
