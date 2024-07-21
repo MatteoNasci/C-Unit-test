@@ -15,6 +15,65 @@ typedef struct test_data{
     size_t logs_length;
 } mln_test_data;
 
+/*If MLN_REMOVE_TESTS_PREFIXES is defined it exposes test macro variants without the MLN_ prefix*/
+#ifdef MLN_REMOVE_TESTS_PREFIXES
+
+    #define PRE_TESTS MLN_PRE_TESTS
+    #define POST_TESTS MLN_POST_TESTS
+    #define RUN_TEST(func_name) MLN_RUN_TEST(func_name)
+    #define TEST(func_name, ...) MLN_TEST(func_name, ...)
+    #define FAIL() MLN_FAIL()
+    #define FAILm(msg, expected, actual, format, assert_failed) MLN_FAILm(msg, expected, actual, format, assert_failed)
+    #define PASS() MLN_PASS()
+    #define SKIP() MLN_SKIP()
+    #define SKIP(msg) MLN_SKIP(msg)
+    #define ASSERT(condition) MLN_ASSERT(condition)
+    #define ASSERTm(condition, msg) MLN_ASSERTm(condition, msg)
+    #define ASSERT_FALSE(condition) MLN_ASSERT_FALSE(condition)
+    #define ASSERT_FALSEm(condition, msg) MLN_ASSERT_FALSEm(condition, msg) 
+    #define ASSERT_EQ(expected, actual_value) MLN_ASSERT_EQ(expected, actual_value) 
+    #define ASSERT_EQm(expected, actual_value, msg) MLN_ASSERT_EQ(expected, actual_value, msg)
+    #define ASSERT_EQ_FORMAT(expected, actual_value, format) MLN_ASSERT_EQ_FORMAT(expected, actual_value, format)
+    #define ASSERT_EQ_FORMATm(expected, actual_value, format, msg) MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, msg)
+    #define ASSERT_NEQ(expected, actual_value) MLN_ASSERT_NEQ(expected, actual_value)
+    #define ASSERT_NEQm(expected, actual_value, msg) MLN_ASSERT_NEQm(expected, actual_value, msg)
+    #define ASSERT_GT(expected, actual_value) MLN_ASSERT_GT(expected, actual_value)
+    #define ASSERT_GTm(expected, actual_value, msg) MLN_ASSERT_GTm(expected, actual_value, msg)
+    #define ASSERT_GTE(expected, actual_value) MLN_ASSERT_GTE(expected, actual_value)
+    #define ASSERT_GTEm(expected, actual_value, msg) MLN_ASSERT_GTEm(expected, actual_value, msg)
+    #define ASSERT_LT(expected, actual_value) MLN_ASSERT_LT(expected, actual_value)
+    #define ASSERT_LTm(expected, actual_value, msg) MLN_ASSERT_LTm(expected, actual_value, msg)
+    #define ASSERT_LTE(expected, actual_value) MLN_ASSERT_LTE(expected, actual_value)
+    #define ASSERT_LTEm(expected, actual_value, msg) MLN_ASSERT_LTEm(expected, actual_value, msg)
+    #define ASSERT_IN_RANGE(expected, actual_value, tollerance) MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance)
+    #define ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg) MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg)
+    #define ASSERT_STRN_EQ(expected, actual_value, size) MLN_ASSERT_STRN_EQ(expected, actual_value, size) 
+    #define ASSERT_STRN_EQm(expected, actual_value, size, msg) MLN_ASSERT_STRN_EQ(expected, actual_value, size, msg)
+    #define ASSERT_STRN_NEQ(expected, actual_value, size) MLN_ASSERT_STRN_NEQ(expected, actual_value, size)
+    #define ASSERT_STRN_NEQm(expected, actual_value, size, msg) MLN_ASSERT_STRN_NEQm(expected, actual_value, size, msg)
+    #define ASSERT_STRN_GT(expected, actual_value, size) MLN_ASSERT_STRN_GT(expected, actual_value, size)
+    #define ASSERT_STRN_GTm(expected, actual_value, size, msg) MLN_ASSERT_STRN_GTm(expected, actual_value, size, msg)
+    #define ASSERT_STRN_GTE(expected, actual_value, size) MLN_ASSERT_STRN_GTE(expected, actual_value, size)
+    #define ASSERT_STRN_GTEm(expected, actual_value, size, msg) MLN_ASSERT_STRN_GTEm(expected, actual_value, size, msg)
+    #define ASSERT_STRN_LT(expected, actual_value, size) MLN_ASSERT_STRN_LT(expected, actual_value, size)
+    #define ASSERT_STRN_LTm(expected, actual_value, size, msg) MLN_ASSERT_STRN_LTm(expected, actual_value, size, msg)
+    #define ASSERT_STRN_LTE(expected, actual_value, size) MLN_ASSERT_STRN_LTE(expected, actual_value, size)
+    #define ASSERT_STRN_LTEm(expected, actual_value, size, msg) MLN_ASSERT_STRN_LTEm(expected, actual_value, size, msg)
+    #define ASSERT_STR_EQ(expected, actual_value) MLN_ASSERT_STR_EQ(expected, actual_value) 
+    #define ASSERT_STR_EQm(expected, actual_value, msg) MLN_ASSERT_STR_EQ(expected, actual_value, msg)
+    #define ASSERT_STR_NEQ(expected, actual_value) MLN_ASSERT_STR_NEQ(expected, actual_value)
+    #define ASSERT_STR_NEQm(expected, actual_value, msg) MLN_ASSERT_STR_NEQm(expected, actual_value, msg)
+    #define ASSERT_STR_GT(expected, actual_value) MLN_ASSERT_STR_GT(expected, actual_value)
+    #define ASSERT_STR_GTm(expected, actual_value, msg) MLN_ASSERT_STR_GTm(expected, actual_value, msg)
+    #define ASSERT_STR_GTE(expected, actual_value) MLN_ASSERT_STR_GTE(expected, actual_value)
+    #define ASSERT_STR_GTEm(expected, actual_value, msg) MLN_ASSERT_STR_GTEm(expected, actual_value, msg)
+    #define ASSERT_STR_LT(expected, actual_value) MLN_ASSERT_STR_LT(expected, actual_value)
+    #define ASSERT_STR_LTm(expected, actual_value, msg) MLN_ASSERT_STR_LTm(expected, actual_value, msg)
+    #define ASSERT_STR_LTE(expected, actual_value) MLN_ASSERT_STR_LTE(expected, actual_value)
+    #define ASSERT_STR_LTEm(expected, actual_value, msg) MLN_ASSERT_STR_LTEm(expected, actual_value, msg)
+    
+#endif
+
 /*
 To be used once at the beginning of the function/main where all the tests will be performed
 Starting point of the testing procedure
