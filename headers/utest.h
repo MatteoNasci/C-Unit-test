@@ -158,21 +158,23 @@ MLN_DEFINE_TEST(my_test,
 Can be used inside a test, will automatically fail the current test and stop the execution
 */
 #define MLN_FAIL() \
-    MLN_FAILm(__MLN_DEFAULT_FAIL_MSG, 0, 0, "", ##MLN_FAIL)
+    MLN_FAILm(__MLN_DEFAULT_FAIL_MSG, "Fail", "Fail", "%s", ##MLN_FAIL)
 
 #define MLN_FAILm(msg, expected, actual, format, assert_failed) \
     {\
     __mln_out_test_data->fails++;\
     __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
-    const size_t __mln_sizeof_size = sizeof format;\
-    if(__mln_sizeof_size > 1){\
-        printf(#assert_failed " failed! ");\
+    const char* __mln_format_string = format;\
+    const size_t __mln_format_size = sizeof __mln_format_string;\
+    printf(#assert_failed " failed! ");\
+    if(__mln_format_size >= 2)\
+    {\
         printf("Expected: ");\
-        printf(#format, expected);\
+        printf(__mln_format_string, expected);\
         printf(" Actual: ");\
-        printf(#format, actual);\
-        printf("\n");\
+        printf(__mln_format_string, actual);\
     }\
+    printf("\n");\
     }\
     return;
 
