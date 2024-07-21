@@ -327,6 +327,7 @@ Expected and actual_value might be evaluated more than once
 
 /*
 Assert that the first size bytes of the strings are equal (strncmp(expected, actual_value, size) == 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STRN_EQ(expected, actual_value, size)   \
     MLN_ASSERT_STRN_EQm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
@@ -336,6 +337,7 @@ Assert that the first size bytes of the strings are equal (strncmp(expected, act
 
 /*
 Assert that the first size bytes of the strings are not equal (strncmp(expected, actual_value, size) != 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STRN_NEQ(expected, actual_value, size)   \
     MLN_ASSERT_STRN_NEQm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
@@ -345,6 +347,7 @@ Assert that the first size bytes of the strings are not equal (strncmp(expected,
 
 /*
 Assert that the first size bytes of the expected string comes lexicographically after the first size bytes of the actual string (strncmp(expected, actual_value, size) > 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STRN_GT(expected, actual_value, size)   \
     MLN_ASSERT_STRN_GTm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
@@ -354,6 +357,7 @@ Assert that the first size bytes of the expected string comes lexicographically 
 
 /*
 Assert that the first size bytes of the expected string is either equal or comes lexicographically after the first size bytes of the actual string (strncmp(expected, actual_value, size) >= 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STRN_GTE(expected, actual_value, size)   \
     MLN_ASSERT_STRN_GTEm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
@@ -363,6 +367,7 @@ Assert that the first size bytes of the expected string is either equal or comes
 
 /*
 Assert that the first size bytes of the expected string comes lexicographically before the first size bytes of the actual string (strncmp(expected, actual_value, size) < 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STRN_LT(expected, actual_value, size)   \
     MLN_ASSERT_STRN_LTm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
@@ -372,6 +377,7 @@ Assert that the first size bytes of the expected string comes lexicographically 
 
 /*
 Assert that the first size bytes of the expected string is either equal or comes lexicographically before the first size bytes of the actual string (strncmp(expected, actual_value, size) <= 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STRN_LTE(expected, actual_value, size)   \
     MLN_ASSERT_STRN_LTEm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
@@ -381,6 +387,7 @@ Assert that the first size bytes of the expected string is either equal or comes
 
 /*
 Assert that the first string is equal to the second (strcmp(expected, actual_value) == 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STR_EQ(expected, actual_value)   \
     MLN_ASSERT_STR_EQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
@@ -390,6 +397,7 @@ Assert that the first string is equal to the second (strcmp(expected, actual_val
 
 /*
 Assert that the first string is not equal to the second (strcmp(expected, actual_value) != 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STR_NEQ(expected, actual_value)   \
     MLN_ASSERT_STR_NEQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
@@ -399,6 +407,7 @@ Assert that the first string is not equal to the second (strcmp(expected, actual
 
 /*
 Assert that the expected string comes lexicographically after the actual string (strcmp(expected, actual_value) > 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STR_GT(expected, actual_value)   \
     MLN_ASSERT_STR_GTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
@@ -408,6 +417,7 @@ Assert that the expected string comes lexicographically after the actual string 
 
 /*
 Assert that the expected string is either equal or comes lexicographically after the actual string (strcmp(expected, actual_value) >= 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STR_GTE(expected, actual_value)   \
     MLN_ASSERT_STR_GTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
@@ -417,6 +427,7 @@ Assert that the expected string is either equal or comes lexicographically after
 
 /*
 Assert that the expected string comes lexicographically before the actual string (strcmp(expected, actual_value) < 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STR_LT(expected, actual_value)   \
     MLN_ASSERT_STR_LTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
@@ -426,6 +437,7 @@ Assert that the expected string comes lexicographically before the actual string
 
 /*
 Assert that the expected string is either equal or comes lexicographically before the actual string (strcmp(expected, actual_value) <= 0).
+Expected and actual_value might be evaluated more than once
 */
 #define MLN_ASSERT_STR_LTE(expected, actual_value)   \
     MLN_ASSERT_STR_LTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
