@@ -26,7 +26,7 @@ typedef struct test_data{
     #define FAILm(msg, expected, actual, format, assert_failed) MLN_FAILm(msg, expected, actual, format, assert_failed)
     #define PASS() MLN_PASS()
     #define SKIP() MLN_SKIP()
-    #define SKIP(msg) MLN_SKIP(msg)
+    #define SKIPm(msg) MLN_SKIPm(msg)
     #define ASSERT(condition) MLN_ASSERT(condition)
     #define ASSERTm(condition, msg) MLN_ASSERTm(condition, msg)
     #define ASSERT_FALSE(condition) MLN_ASSERT_FALSE(condition)
