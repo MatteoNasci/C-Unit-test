@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "internal_utest.h"
 
 typedef struct test_data{
@@ -80,6 +81,7 @@ To be used once at the beginning of the function/main where all the tests will b
 Starting point of the testing procedure
 */
 #define MLN_PRE_TESTS           \
+    const clock_t __mln_start_time = clock();\
     size_t __mln_verbosity = 0;\
     size_t __mln_total_passes = 0;\
     size_t __mln_total_fails = 0;\
@@ -99,6 +101,7 @@ Ending point of the testing procedure
 #define MLN_POST_TESTS          \
     const size_t __mln_total_results = __mln_total_passes + __mln_total_fails + __mln_total_skips;\
     const size_t __mln_total_test_results = __mln_total_test_passes + __mln_total_test_fails + __mln_total_test_skips;\
+    const clock_t __mln_end_time = clock();\
     printf("Tests over. Results...\n");\
     printf("Tests passed: %zu/%zu. Total asserts passed: %zu/%zu\n", __mln_total_test_passes, __mln_total_test_results, __mln_total_passes, __mln_total_results);\
     printf("Tests skiped: %zu/%zu. Total asserts skipped: %zu/%zu\n", __mln_total_test_skips, __mln_total_test_results, __mln_total_skips, __mln_total_results);\
@@ -106,6 +109,7 @@ Ending point of the testing procedure
     printf("Tests failed percentage: %Lf%%, Asserts failed percentage: %Lf%% \n", \
     ((long double)(__mln_total_test_fails) / __mln_total_test_results) * 100.0, \
     ((long double)(__mln_total_fails) / __mln_total_results) * 100.0);\
+    printf("Approximate seconds elapsed: %.3lf\n", (double)(__mln_end_time - __mln_start_time) / CLOCKS_PER_SEC);\
     printf("Press any keys to close...\n");\
     getchar();
 
@@ -118,7 +122,11 @@ MLN_PRE_TESTS must appear once before any tests can be executed
     if(__mln_verbosity >= 2){\
         printf("Testing n.%zu function [%s]...\n", __mln_current_test_count + 1, #func_name);\
     }\
+    \
+    const clock_t __mln_current_test_start_time = clock();\
     __mln_test_##func_name(&__mln_data, __mln_verbosity);\
+    const clock_t __mln_current_test_end_time = clock();\
+    \
     __mln_current_test_count++;\
     __mln_total_passes += __mln_data.passes;\
     __mln_total_skips += __mln_data.skips;\
@@ -130,9 +138,10 @@ MLN_PRE_TESTS must appear once before any tests can be executed
     }else if(__mln_data.passes != 0){\
         __mln_total_test_passes++;\
     }\
+    \
     bool __mln_logs_used = false;\
     if(__mln_data.logs_length > 0){\
-        printf("%s\n", __mln_data.logs);\
+        printf("%s\nEstimated elapsed seconds: %.3lf\n", __mln_data.logs, (double)(__mln_current_test_end_time - __mln_current_test_start_time) / CLOCKS_PER_SEC);\
         __mln_logs_used = true;\
     }\
     if(__mln_data.fails != 0 && __mln_verbosity > 0){\
@@ -486,9 +495,8 @@ Assert that the first SIZE bytes of memory pointed to by EXPECTED and ACTUAL are
 ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
 Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
 
-Add timing stuff and logging
-
-Add possibility to reduce logging
+Add define based logic where if MLN_REDUCE_MACROS_TO_FUNCTIONS is defined we add internal functions for test macros (to reduce exe size by calling functions instead of only using macros)
+The functions will be for 'internal' usage, the end user will still use the MACROS from this file
 */
 
 #endif
