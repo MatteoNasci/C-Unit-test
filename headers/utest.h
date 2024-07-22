@@ -97,6 +97,16 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define ASSERT_FALSE(condition) MLN_ASSERT_FALSE(condition)
     #define ASSERT_FALSEm(condition, msg) MLN_ASSERT_FALSEm(condition, msg) 
     /*
+    Assert that condition evaluates as a NULL value
+    */
+    #define ASSERT_NULL(value) MLN_ASSERT_NULL(value)
+    #define ASSERT_NULLm(value, msg) MLN_ASSERT_NULLm(value, msg)
+    /*
+    Assert that condition evaluates as a non-NULL value
+    */
+    #define ASSERT_NNULL(value) MLN_ASSERT_NNULL(value)
+    #define ASSERT_NNULLm(value, msg) MLN_ASSERT_NNULLm(value, msg)
+    /*
     Assert that expected == actual_value
     */
     #define ASSERT_EQ(expected, actual_value) MLN_ASSERT_EQ(expected, actual_value) 
@@ -216,13 +226,13 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
 /* Defining MLN_REDUCE_MACROS_TO_FUNCTIONS will force most MACROS to use function calls instead, reducing code size*/
 #ifdef MLN_REDUCE_MACROS_TO_FUNCTIONS
 
-    #define MLN_FAILm __MLN_FAILm_INTERNAL_FUNC
-    #define MLN_RUN_TEST __MLN_RUN_TEST_INTERNAL_FUNC
+    #define MLN_FAILm(msg, expected, actual, format, assert_failed) __MLN_FAILm_INTERNAL_FUNC(msg, expected, actual, format, assert_failed)
+    #define MLN_RUN_TEST(func_name) __MLN_RUN_TEST_INTERNAL_FUNC(func_name)
 
 #else
 
-    #define MLN_FAILm __MLN_FAILm_INTERNAL
-    #define MLN_RUN_TEST __MLN_RUN_TEST_INTERNAL
+    #define MLN_FAILm(msg, expected, actual, format, assert_failed) __MLN_FAILm_INTERNAL(msg, expected, actual, format, assert_failed)
+    #define MLN_RUN_TEST(func_name) __MLN_RUN_TEST_INTERNAL(func_name)
 
 #endif
 
@@ -269,15 +279,13 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
         __mln_verbosity = 1;\
     }
 
-#define MLN_FAIL() \
-    MLN_FAILm(__MLN_DEFAULT_FAIL_MSG, "Fail", "Fail", "%s", ##MLN_FAIL)
+#define MLN_FAIL() MLN_FAILm(__MLN_DEFAULT_FAIL_MSG, "Fail", "Fail", "%s", ##MLN_FAIL)
 
 #define MLN_PASS() \
     __mln_out_test_data->passes++;\
     return;
 
-#define MLN_SKIP() \
-    MLN_SKIPm(__MLN_DEFAULT_SKIP_MSG)
+#define MLN_SKIP() MLN_SKIPm(__MLN_DEFAULT_SKIP_MSG)
 
 #define MLN_SKIPm(msg) \
     __mln_out_test_data->skips++;\
@@ -286,8 +294,7 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     }\
     return;
 
-#define MLN_ASSERT(condition)   \
-    MLN_ASSERTm(condition, __MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT(condition) MLN_ASSERTm(condition, __MLN_DEFAULT_FAIL_MSG) 
 
 #define MLN_ASSERTm(condition, msg)   \
     {\
@@ -299,8 +306,7 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     }\
     }
 
-#define MLN_ASSERT_FALSE(condition)   \
-    MLN_ASSERT_FALSEm(condition, __MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_FALSE(condition) MLN_ASSERT_FALSEm(condition, __MLN_DEFAULT_FAIL_MSG) 
 
 #define MLN_ASSERT_FALSEm(condition, msg)   \
     {\
@@ -312,14 +318,35 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     }\
     }
 
-#define MLN_ASSERT_EQ(expected, actual_value)   \
-    MLN_ASSERT_EQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_NULL(value) MLN_ASSERT_NULLm(value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_EQm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT(expected, actual_value, msg, ==, ##MLN_ASSERT_EQ)
+#define MLN_ASSERT_NULLm(value, msg) \
+    {\
+    const bool __mln_result = NULL == value;\
+    if(__mln_result){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        MLN_FAILm(msg, NULL, value, "%p", ##MLN_ASSERT_NULL) \
+    }\
+    }
 
-#define MLN_ASSERT_EQ_FORMAT(expected, actual_value, format)   \
-    MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, __MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_NNULL(value) MLN_ASSERT_NNULLm(value, __MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_NNULLm(value, msg) \
+    {\
+    const bool __mln_result = NULL != value;\
+    if(__mln_result){\
+        __mln_out_test_data->passes++;\
+    }else{\
+        MLN_FAILm(msg, NULL, value, "%p", ##MLN_ASSERT_NNULL) \
+    }\
+    }
+
+#define MLN_ASSERT_EQ(expected, actual_value) MLN_ASSERT_EQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_EQm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT(expected, actual_value, msg, ==, ##MLN_ASSERT_EQ)
+
+#define MLN_ASSERT_EQ_FORMAT(expected, actual_value, format) MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, __MLN_DEFAULT_FAIL_MSG) 
 
 #define MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, msg)   \
     {\
@@ -331,38 +358,27 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     }\
     }
 
-#define MLN_ASSERT_NEQ(expected, actual_value)   \
-    MLN_ASSERT_NEQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_NEQ(expected, actual_value) MLN_ASSERT_NEQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) 
 
-#define MLN_ASSERT_NEQm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT(expected, actual_value, msg, !=, ##MLN_ASSERT_NEQ)
+#define MLN_ASSERT_NEQm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT(expected, actual_value, msg, !=, ##MLN_ASSERT_NEQ)
 
-#define MLN_ASSERT_GT(expected, actual_value)   \
-    MLN_ASSERT_GTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_GT(expected, actual_value) MLN_ASSERT_GTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_GTm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT(expected, actual_value, msg, >, ##MLN_ASSERT_GT)
+#define MLN_ASSERT_GTm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT(expected, actual_value, msg, >, ##MLN_ASSERT_GT)
 
-#define MLN_ASSERT_GTE(expected, actual_value)   \
-    MLN_ASSERT_GTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_GTE(expected, actual_value) MLN_ASSERT_GTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_GTEm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT(expected, actual_value, msg, >=, ##MLN_ASSERT_GTE)
+#define MLN_ASSERT_GTEm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT(expected, actual_value, msg, >=, ##MLN_ASSERT_GTE)
 
-#define MLN_ASSERT_LT(expected, actual_value)   \
-    MLN_ASSERT_LTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_LT(expected, actual_value) MLN_ASSERT_LTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_LTm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT(expected, actual_value, msg, <, ##MLN_ASSERT_LT)
+#define MLN_ASSERT_LTm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT(expected, actual_value, msg, <, ##MLN_ASSERT_LT)
 
-#define MLN_ASSERT_LTE(expected, actual_value)   \
-    MLN_ASSERT_LTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_LTE(expected, actual_value) MLN_ASSERT_LTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_LTEm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT(expected, actual_value, msg, <=, ##MLN_ASSERT_LTE)
+#define MLN_ASSERT_LTEm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT(expected, actual_value, msg, <=, ##MLN_ASSERT_LTE)
 
-#define MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance)   \
-    MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance) MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, __MLN_DEFAULT_FAIL_MSG)
 
 #define MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg)   \
     {\
@@ -374,77 +390,53 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     }\
     }
 
-#define MLN_ASSERT_STRN_EQ(expected, actual_value, size)   \
-    MLN_ASSERT_STRN_EQm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STRN_EQ(expected, actual_value, size) MLN_ASSERT_STRN_EQm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STRN_EQm(expected, actual_value, size, msg)   \
-    __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, ==, ##MLN_ASSERT_STRN_EQ)
+#define MLN_ASSERT_STRN_EQm(expected, actual_value, size, msg) __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, ==, ##MLN_ASSERT_STRN_EQ)
 
-#define MLN_ASSERT_STRN_NEQ(expected, actual_value, size)   \
-    MLN_ASSERT_STRN_NEQm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STRN_NEQ(expected, actual_value, size) MLN_ASSERT_STRN_NEQm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STRN_NEQm(expected, actual_value, size, msg)   \
-    __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, !=, ##MLN_ASSERT_STRN_NEQ)
+#define MLN_ASSERT_STRN_NEQm(expected, actual_value, size, msg) __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, !=, ##MLN_ASSERT_STRN_NEQ)
 
-#define MLN_ASSERT_STRN_GT(expected, actual_value, size)   \
-    MLN_ASSERT_STRN_GTm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STRN_GT(expected, actual_value, size) MLN_ASSERT_STRN_GTm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STRN_GTm(expected, actual_value, size, msg)   \
-    __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, >, ##MLN_ASSERT_STRN_GT)
+#define MLN_ASSERT_STRN_GTm(expected, actual_value, size, msg) __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, >, ##MLN_ASSERT_STRN_GT)
 
-#define MLN_ASSERT_STRN_GTE(expected, actual_value, size)   \
-    MLN_ASSERT_STRN_GTEm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STRN_GTE(expected, actual_value, size) MLN_ASSERT_STRN_GTEm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STRN_GTEm(expected, actual_value, size, msg)   \
-    __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, >=, ##MLN_ASSERT_STRN_GTE)
+#define MLN_ASSERT_STRN_GTEm(expected, actual_value, size, msg) __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, >=, ##MLN_ASSERT_STRN_GTE)
 
-#define MLN_ASSERT_STRN_LT(expected, actual_value, size)   \
-    MLN_ASSERT_STRN_LTm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STRN_LT(expected, actual_value, size) MLN_ASSERT_STRN_LTm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STRN_LTm(expected, actual_value, size, msg)   \
-    __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, <, ##MLN_ASSERT_STRN_LT)
+#define MLN_ASSERT_STRN_LTm(expected, actual_value, size, msg) __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, <, ##MLN_ASSERT_STRN_LT)
 
-#define MLN_ASSERT_STRN_LTE(expected, actual_value, size)   \
-    MLN_ASSERT_STRN_LTEm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STRN_LTE(expected, actual_value, size) MLN_ASSERT_STRN_LTEm(expected, actual_value, size, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STRN_LTEm(expected, actual_value, size, msg)   \
-    __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, <=, ##MLN_ASSERT_STRN_LTE)
+#define MLN_ASSERT_STRN_LTEm(expected, actual_value, size, msg) __MLN_DEFAULT_ASSERT_STRN(expected, actual_value, size, msg, <=, ##MLN_ASSERT_STRN_LTE)
 
-#define MLN_ASSERT_STR_EQ(expected, actual_value)   \
-    MLN_ASSERT_STR_EQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STR_EQ(expected, actual_value) MLN_ASSERT_STR_EQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STR_EQm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, ==, ##MLN_ASSERT_STR_EQ)
+#define MLN_ASSERT_STR_EQm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, ==, ##MLN_ASSERT_STR_EQ)
 
-#define MLN_ASSERT_STR_NEQ(expected, actual_value)   \
-    MLN_ASSERT_STR_NEQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STR_NEQ(expected, actual_value) MLN_ASSERT_STR_NEQm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STR_NEQm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, !=, ##MLN_ASSERT_STR_NEQ)
+#define MLN_ASSERT_STR_NEQm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, !=, ##MLN_ASSERT_STR_NEQ)
 
-#define MLN_ASSERT_STR_GT(expected, actual_value)   \
-    MLN_ASSERT_STR_GTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STR_GT(expected, actual_value) MLN_ASSERT_STR_GTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STR_GTm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, >, ##MLN_ASSERT_STR_GT)
+#define MLN_ASSERT_STR_GTm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, >, ##MLN_ASSERT_STR_GT)
 
-#define MLN_ASSERT_STR_GTE(expected, actual_value)   \
-    MLN_ASSERT_STR_GTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STR_GTE(expected, actual_value) MLN_ASSERT_STR_GTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STR_GTEm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, >=, ##MLN_ASSERT_STR_GTE)
+#define MLN_ASSERT_STR_GTEm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, >=, ##MLN_ASSERT_STR_GTE)
 
-#define MLN_ASSERT_STR_LT(expected, actual_value)   \
-    MLN_ASSERT_STR_LTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STR_LT(expected, actual_value) MLN_ASSERT_STR_LTm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STR_LTm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, <, ##MLN_ASSERT_STR_LT)
+#define MLN_ASSERT_STR_LTm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, <, ##MLN_ASSERT_STR_LT)
 
-#define MLN_ASSERT_STR_LTE(expected, actual_value)   \
-    MLN_ASSERT_STR_LTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG) \
+#define MLN_ASSERT_STR_LTE(expected, actual_value) MLN_ASSERT_STR_LTEm(expected, actual_value, __MLN_DEFAULT_FAIL_MSG)
 
-#define MLN_ASSERT_STR_LTEm(expected, actual_value, msg)   \
-    __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, <=, ##MLN_ASSERT_STR_LTE)
+#define MLN_ASSERT_STR_LTEm(expected, actual_value, msg) __MLN_DEFAULT_ASSERT_STR(expected, actual_value, msg, <=, ##MLN_ASSERT_STR_LTE)
 
 /*
 
