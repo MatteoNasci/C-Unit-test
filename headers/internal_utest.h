@@ -149,11 +149,15 @@ Collection of internal defines/functions, not designed to be used by the final u
     \
     bool __mln_logs_used = false;\
     if(__mln_data.logs_length > 0){\
-        printf("%s\nEstimated elapsed seconds: %.3lf\n", __mln_data.logs, (double)(__mln_current_test_end_time - __mln_current_test_start_time) / CLOCKS_PER_SEC);\
+        printf("%s\n", __mln_data.logs);\
         __mln_logs_used = true;\
     }\
     if(__mln_data.fails != 0 && __mln_verbosity > 0){\
         printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", __mln_data.passes, __mln_data.skips, __mln_data.fails);\
+        __mln_logs_used = true;\
+    }\
+    if((__mln_verbosity == 1 && __mln_data.fails != 0) || __mln_verbosity >= 2){\
+        printf("Estimated elapsed seconds: %.3lf\n", (double)(__mln_current_test_end_time - __mln_current_test_start_time) / CLOCKS_PER_SEC);\
         __mln_logs_used = true;\
     }\
     if(__mln_logs_used){\
