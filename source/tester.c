@@ -7,9 +7,7 @@
 #include "utest.h"
 #include "test_headers/tester.h"
 
-MLN_TEST_FUNC_DEFINITIONS
-
-TEST(testing_passes , 
+TEST(testing_passes2 , 
     ASSERT(true)
     ASSERTm(5, "msg")
     ASSERT_FALSE(false)
@@ -63,7 +61,7 @@ TEST(testing_passes ,
     ASSERT_STR_LTE("expected", "expected")
     ASSERT_STR_LTEm("axpected", "ectual_value", "msg")
 )
-TEST(testing_passes_prefix , 
+TEST(testing_passes_prefix2 , 
     MLN_ASSERT(true)
     MLN_ASSERTm(5, "msg")
     MLN_ASSERT_FALSE(false)
@@ -118,67 +116,67 @@ TEST(testing_passes_prefix ,
     MLN_ASSERT_STR_LTEm("axpected", "ectual_value", "msg")
 )
 
-MLN_TEST(time_waster, 
+MLN_TEST(time_waster2, 
     for(size_t i = 0; i < 998899889; i+=2){
         --i;
     }
     MLN_PASS()
 )
 
-TEST(testing_bypass_pass, 
+TEST(testing_bypass_pass2, 
     PASS()
     FAIL()
 )
-TEST(testing_bypass_pass_prefix, 
+TEST(testing_bypass_pass_prefix2, 
     MLN_PASS()
     MLN_FAIL()
 )
-TEST(testing_bypass_skip, 
+TEST(testing_bypass_skip2, 
     SKIP()
     FAIL()
 )
-TEST(testing_bypass_skip_prefix, 
+TEST(testing_bypass_skip_prefix2, 
     MLN_SKIP()
     MLN_FAIL()
 )
-MLN_TEST(testing_bypass_skipm, 
+MLN_TEST(testing_bypass_skipm2, 
     SKIPm("msg")
     FAIL()
 )
-MLN_TEST(testing_bypass_skipm_prefix, 
+MLN_TEST(testing_bypass_skipm_prefix2, 
     MLN_SKIPm("msg\n")
     MLN_FAIL()
 )
-MLN_TEST(testing_bypass_fail, 
+MLN_TEST(testing_bypass_fail2, 
     FAIL()
     PASS()
 )
-MLN_TEST(testing_bypass_fail_prefix, 
+MLN_TEST(testing_bypass_fail_prefix2, 
     MLN_FAIL()
     MLN_PASS()
 )
-MLN_TEST(testing_bypass_failm, 
+MLN_TEST(testing_bypass_failm2, 
     int adios = 2;
     FAILm("msg", adios, 1, "%d", SUCCESS_DEBUG)
     PASS()
 )
-MLN_TEST(testing_bypass_failm_prefix, 
+MLN_TEST(testing_bypass_failm_prefix2, 
     MLN_FAILm("msg\n", 1, -1, "%d", SUCCESS_DEBUG)
     MLN_PASS()
 )
 
-MLN_TEST(testing_assert_eq_fail, 
+MLN_TEST(testing_assert_eq_fail2, 
     int num = 0;
     ASSERT_EQ(num, -1)
     PASS()
 )
 
-MLN_TEST(testing_assert_eq_fail_prefix, 
+MLN_TEST(testing_assert_eq_fail_prefix2, 
     MLN_ASSERT_EQ(5, 1)
     MLN_PASS()
 )
 
-int main(int argc, char**argv){
+void test(){
     //TODO testare multipli file c per test e multiple funzioni da cui fare i test (come questo main)
 
     PRE_TESTS
@@ -186,42 +184,38 @@ int main(int argc, char**argv){
     SET_LOGS_VERBOSITY(2)
 
     //Needs to pass
-    RUN_TEST(testing_passes)
+    RUN_TEST(testing_passes2)
     //Needs to pass
-    RUN_TEST(testing_passes_prefix)
+    RUN_TEST(testing_passes_prefix2)
     //Needs to pass
-    RUN_TEST(testing_bypass_pass)
+    RUN_TEST(testing_bypass_pass2)
     //Needs to pass
-    RUN_TEST(testing_bypass_pass_prefix)
+    RUN_TEST(testing_bypass_pass_prefix2)
 
-    RUN_TEST(time_waster)
+    RUN_TEST(time_waster2)
 
     //Needs to skip
-    RUN_TEST(testing_bypass_skip)
+    RUN_TEST(testing_bypass_skip2)
     //Needs to skip
-    RUN_TEST(testing_bypass_skip_prefix)
+    RUN_TEST(testing_bypass_skip_prefix2)
     //Needs to skip
-    RUN_TEST(testing_bypass_skipm)
+    RUN_TEST(testing_bypass_skipm2)
     //Needs to skip
-    RUN_TEST(testing_bypass_skipm_prefix)
+    RUN_TEST(testing_bypass_skipm_prefix2)
 
     //Needs to fail
-    RUN_TEST(testing_bypass_fail)
+    RUN_TEST(testing_bypass_fail2)
     //Needs to fail
-    RUN_TEST(testing_bypass_fail_prefix)
+    RUN_TEST(testing_bypass_fail_prefix2)
     //Needs to fail
-    RUN_TEST(testing_bypass_failm)
+    RUN_TEST(testing_bypass_failm2)
     //Needs to fail
-    RUN_TEST(testing_bypass_failm_prefix)
+    RUN_TEST(testing_bypass_failm_prefix2)
 
     //Needs to fail
-    RUN_TEST(testing_assert_eq_fail)
+    RUN_TEST(testing_assert_eq_fail2)
     //Needs to fail 
-    RUN_TEST(testing_assert_eq_fail_prefix)
-
-    test();
+    RUN_TEST(testing_assert_eq_fail_prefix2)
 
     POST_TESTS
-
-    test();
 }
