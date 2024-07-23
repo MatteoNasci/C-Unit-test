@@ -1,189 +1,411 @@
 #pragma once
-#ifndef _H_MLN_TESTS_INTERNAL_UTEST_H_
-#define _H_MLN_TESTS_INTERNAL_UTEST_H_
+#ifndef H_MLN_TESTS_INTERNAL_UTEST_H_
+#define H_MLN_TESTS_INTERNAL_UTEST_H_
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 /*
 Collection of internal defines/functions, not designed to be used by the final user
 */
 
-#define __MLN_STRINGIFY(A) #A
-#define __MLN_STRINGIFY_NX(A) __MLN_STRINGIFY(A)
-#define __MLN_DEFAULT_FAIL_MSG __MLN_DEFAULT_FAIL_MSG_C
-#define __MLN_DEFAULT_FAIL_MSG_C __MLN_DEFAULT_FAIL_MSG_A __MLN_DEFAULT_FAIL_MSG_B
-#define __MLN_DEFAULT_FAIL_MSG_A "Failed in " __FILE__ 
-#define __MLN_DEFAULT_FAIL_MSG_B " at line " __MLN_STRINGIFY_NX(__LINE__)
+typedef struct test_data{
+    size_t passes;
+    size_t fails;
+    size_t skips;
+    char* logs;
+    size_t logs_size;
+    size_t logs_length;
+} mln_test_data;
 
-#define __MLN_DEFAULT_SKIP_MSG __MLN_DEFAULT_SKIP_MSG_C
-#define __MLN_DEFAULT_SKIP_MSG_C __MLN_DEFAULT_SKIP_MSG_A __MLN_DEFAULT_SKIP_MSG_B
-#define __MLN_DEFAULT_SKIP_MSG_A "Skipped in " __FILE__ 
-#define __MLN_DEFAULT_SKIP_MSG_B " at line " __MLN_STRINGIFY_NX(__LINE__)
+typedef struct test_results{
+    size_t total_passes;
+    size_t total_fails;
+    size_t total_skips;
+    size_t current_test_count;
+    size_t total_test_passes;
+    size_t total_test_fails;
+    size_t total_test_skips;
+} mln_test_results;
+
+#define MLN_STRINGIFY(A) #A
+#define MLN_STRINGIFY_NX(A) MLN_STRINGIFY(A)
+#define MLN_DEFAULT_FAIL_MSG MLN_DEFAULT_FAIL_MSG_C
+#define MLN_DEFAULT_FAIL_MSG_C MLN_DEFAULT_FAIL_MSG_A MLN_DEFAULT_FAIL_MSG_B
+#define MLN_DEFAULT_FAIL_MSG_A "Failed in " __FILE__ 
+#define MLN_DEFAULT_FAIL_MSG_B " at line " MLN_STRINGIFY_NX(__LINE__)
+
+#define MLN_DEFAULT_SKIP_MSG MLN_DEFAULT_SKIP_MSG_C
+#define MLN_DEFAULT_SKIP_MSG_C MLN_DEFAULT_SKIP_MSG_A MLN_DEFAULT_SKIP_MSG_B
+#define MLN_DEFAULT_SKIP_MSG_A "Skipped in " __FILE__ 
+#define MLN_DEFAULT_SKIP_MSG_B " at line " MLN_STRINGIFY_NX(__LINE__)
+
+#define MLN_GET_TEST_NAME_FROM_FUNC(func_name) mln_test_##func_name
+#define MLN_GET_TEST_NAME_TEXT_FROM_FUNC(func_name) MLN_STRINGIFY_NX(MLN_GET_TEST_NAME_FROM_FUNC(func_name))
+
+#define MLN_PRE_TESTS MLN_PRE_TESTS_IMPLEMENTATION
+
+#define MLN_POST_TESTS MLN_POST_TESTS_IMPLEMENTATION
+
+#define MLN_TEST(func_name, ...) MLN_TEST_IMPLEMENTATION(MLN_GET_TEST_NAME_FROM_FUNC(func_name), __VA_ARGS__)
+
+#define MLN_SET_LOGS_VERBOSITY(verbosity) MLN_SET_LOGS_VERBOSITY_IMPLEMENTATION(verbosity, mln_verbosity)
+
+#define MLN_FAIL() MLN_FAILm(MLN_DEFAULT_FAIL_MSG, "Fail", "Fail", "%s", ##MLN_FAIL)
+
+#define MLN_FAILm(msg, expected, actual, format, assert_failed) MLN_FAILm_IMPLEMENTATION((mln_data_ptr), mln_verbosity, msg, expected, actual, #format, #assert_failed)
+
+#define MLN_PASS() MLN_PASS_IMPLEMENTATION(mln_data_ptr)
+
+#define MLN_SKIP() MLN_SKIPm(MLN_DEFAULT_SKIP_MSG)
+
+#define MLN_SKIPm(msg) MLN_SKIPm_IMPLEMENTATION(msg, mln_data_ptr)
+
+#define MLN_ASSERT(condition) MLN_ASSERTm(condition, MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERTm(condition, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION("true", condition ? "true" : "false", msg, (condition), ##MLN_ASSERT, "%s")
+
+#define MLN_ASSERT_FALSE(condition) MLN_ASSERT_FALSEm(condition, MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_FALSEm(condition, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION("false", condition ? "true" : "false", msg, (!condition), ##MLN_ASSERT_FALSE, "%s")
+
+#define MLN_ASSERT_NULL(value) MLN_ASSERT_NULLm(value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_NULLm(value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, msg, (NULL == value), ##MLN_ASSERT_NULL, "%p")
+
+#define MLN_ASSERT_NNULL(value) MLN_ASSERT_NNULLm(value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_NNULLm(value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, msg, (NULL != value), ##MLN_ASSERT_NNULL, "%p")
+
+#define MLN_ASSERT_EQ(expected, actual_value) MLN_ASSERT_EQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_EQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected == actual_value), ##MLN_ASSERT_EQ, "%s")
+
+#define MLN_ASSERT_EQ_FORMAT(expected, actual_value, format) MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected == actual_value), ##MLN_ASSERT_EQ, format)
+
+#define MLN_ASSERT_NEQ(expected, actual_value) MLN_ASSERT_NEQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG) 
+
+#define MLN_ASSERT_NEQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected != actual_value), ##MLN_ASSERT_NEQ, "%s")
+
+#define MLN_ASSERT_GT(expected, actual_value) MLN_ASSERT_GTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_GTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected > actual_value), ##MLN_ASSERT_GT, "%s")
+
+#define MLN_ASSERT_GTE(expected, actual_value) MLN_ASSERT_GTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_GTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected >= actual_value), ##MLN_ASSERT_GTE, "%s")
+
+#define MLN_ASSERT_LT(expected, actual_value) MLN_ASSERT_LTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_LTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected < actual_value), ##MLN_ASSERT_LT, "%s")
+
+#define MLN_ASSERT_LTE(expected, actual_value) MLN_ASSERT_LTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_LTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected <= actual_value), ##MLN_ASSERT_LTE, "%s")
+
+#define MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance) MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), ##MLN_ASSERT_IN_RANGE, "%s")
+
+#define MLN_ASSERT_STRN_EQ(expected, actual_value, size) MLN_ASSERT_STRN_EQm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STRN_EQm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) == 0), ##MLN_ASSERT_STRN_EQ, "%s")
+
+#define MLN_ASSERT_STRN_NEQ(expected, actual_value, size) MLN_ASSERT_STRN_NEQm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STRN_NEQm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) != 0), ##MLN_ASSERT_STRN_NEQ, "%s")
+
+#define MLN_ASSERT_STRN_GT(expected, actual_value, size) MLN_ASSERT_STRN_GTm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STRN_GTm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) > 0), ##MLN_ASSERT_STRN_GT, "%s")
+
+#define MLN_ASSERT_STRN_GTE(expected, actual_value, size) MLN_ASSERT_STRN_GTEm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STRN_GTEm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) >= 0), ##MLN_ASSERT_STRN_GTE, "%s")
+
+#define MLN_ASSERT_STRN_LT(expected, actual_value, size) MLN_ASSERT_STRN_LTm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STRN_LTm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) < 0), ##MLN_ASSERT_STRN_LT, "%s")
+
+#define MLN_ASSERT_STRN_LTE(expected, actual_value, size) MLN_ASSERT_STRN_LTEm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STRN_LTEm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) <= 0), ##MLN_ASSERT_STRN_LTE, "%s")
+
+#define MLN_ASSERT_STR_EQ(expected, actual_value) MLN_ASSERT_STR_EQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STR_EQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) == 0), ##MLN_ASSERT_STR_EQ, "%s")
+
+#define MLN_ASSERT_STR_NEQ(expected, actual_value) MLN_ASSERT_STR_NEQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STR_NEQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) != 0), ##MLN_ASSERT_STR_NEQ, "%s")
+
+#define MLN_ASSERT_STR_GT(expected, actual_value) MLN_ASSERT_STR_GTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STR_GTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) > 0), ##MLN_ASSERT_STR_GT, "%s")
+
+#define MLN_ASSERT_STR_GTE(expected, actual_value) MLN_ASSERT_STR_GTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STR_GTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) >= 0), ##MLN_ASSERT_STR_GTE, "%s")
+
+#define MLN_ASSERT_STR_LT(expected, actual_value) MLN_ASSERT_STR_LTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STR_LTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) < 0), ##MLN_ASSERT_STR_LT, "%s")
+
+#define MLN_ASSERT_STR_LTE(expected, actual_value) MLN_ASSERT_STR_LTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+
+#define MLN_ASSERT_STR_LTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) <= 0), ##MLN_ASSERT_STR_LTE, "%s")
+
+/*
+
+TODO
+
+As of now assert fail messagges show the var name instead of the value when printing logs (since i simply do #expected and #actual most of the time)
+Fix it somehow and take into account the need for fail macro to be a func if related define is on
+
+ASSERT_MEM_EQ(EXPECTED, ACTUAL, SIZE)
+Assert that the first SIZE bytes of memory pointed to by EXPECTED and ACTUAL are equal. If their memory differs, print a hexdump and highlight the lines and individual bytes which do not match.
+
+ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
+Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
+*/
+
 
 #ifdef MLN_REDUCE_MACROS_TO_FUNCTIONS
 
-    #define __MLN_RESET_DATA __MLN_RESET_DATA_INTERNAL_FUNC
-    #define __MLN_ADD_LOGS __MLN_ADD_LOGS_INTERNAL_FUNC
-    #define __MLN_RESIZE_LOGS __MLN_RESIZE_LOGS_INTERNAL_FUNC
-    #define __MLN_DEFAULT_ASSERT __MLN_DEFAULT_ASSERT_INTERNAL_FUNC
-    #define __MLN_DEFAULT_ASSERT_STRN __MLN_DEFAULT_ASSERT_STRN_INTERNAL_FUNC
-    #define __MLN_DEFAULT_ASSERT_STR __MLN_DEFAULT_ASSERT_STR_INTERNAL_FUNC
+    #define MLN_RESET_DATA(mln_data_ptr) MLN_RESET_DATA_IMPLEMENTATION_FUNC((mln_data_ptr))
+    #define MLN_ADD_LOGS(mln_data_ptr, msg) MLN_ADD_LOGS_IMPLEMENTATION_FUNC((mln_data_ptr), msg)
+    #define MLN_RUN_TEST(func_name) MLN_RUN_TEST_IMPLEMENTATION_FUNC(func_name)
+
+    #define MLN_RESET_DATA_IMPLEMENTATION_FUNC(mln_data_ptr) mln_reset_data_implementation_func_call(mln_data_ptr);
+    #define MLN_ADD_LOGS_IMPLEMENTATION_FUNC(mln_data_ptr, msg) mln_add_logs_implementation_func_call(mln_data_ptr, msg);
+    #define MLN_RUN_TEST_IMPLEMENTATION_FUNC(func_name) mln_run_test_implementation_func_call(&(MLN_GET_TEST_NAME_FROM_FUNC(func_name)), #func_name, &mln_data, mln_verbosity, &mln_results, CLOCKS_PER_SEC);
+
+
+    void mln_reset_data_implementation_func_call(mln_test_data* mln_data_ptr);
+    void mln_add_logs_implementation_func_call(mln_test_data* mln_data_ptr, const char* msg);
+    void mln_run_test_implementation_func_call(void(*func_ptr)(mln_test_data*, const size_t),  const char* func_name_text, mln_test_data* mln_data_ptr,  const size_t mln_verbosity,  mln_test_results* mln_results_ptr, const clock_t clocks_per_sec);
+
+
+    #define MLN_TEST_FUNC_DEFINITIONS\
+        void mln_reset_data_implementation_func_call(mln_test_data* mln_data_ptr){\
+            MLN_RESET_DATA_IMPLEMENTATION(mln_data_ptr)\
+        }\
+        \
+        void mln_add_logs_implementation_func_call(mln_test_data* mln_data_ptr, const char* msg){\
+            MLN_ADD_LOGS_IMPLEMENTATION(mln_data_ptr, msg)\
+        }\
+        \
+        void mln_run_test_implementation_func_call(\
+        void(*func_ptr)(mln_test_data*, const size_t), \
+        const char* func_name_text,\
+        mln_test_data* mln_data_ptr, \
+        const size_t mln_verbosity, \
+        mln_test_results* mln_results_ptr,\
+        const clock_t clocks_per_sec){\
+            MLN_RUN_TEST_IMPLEMENTATION(func_ptr, func_name_text, mln_data_ptr, mln_verbosity, mln_results_ptr, clocks_per_sec)\
+        }
     
 #else
 
-    #define __MLN_RESET_DATA __MLN_RESET_DATA_INTERNAL
-    #define __MLN_ADD_LOGS __MLN_ADD_LOGS_INTERNAL
-    #define __MLN_RESIZE_LOGS __MLN_RESIZE_LOGS_INTERNAL
-    #define __MLN_DEFAULT_ASSERT __MLN_DEFAULT_ASSERT_INTERNAL
-    #define __MLN_DEFAULT_ASSERT_STRN __MLN_DEFAULT_ASSERT_STRN_INTERNAL
-    #define __MLN_DEFAULT_ASSERT_STR __MLN_DEFAULT_ASSERT_STR_INTERNAL
+    #define MLN_TEST_FUNC_DEFINITIONS
+    #define MLN_RESET_DATA(mln_data_ptr) MLN_RESET_DATA_IMPLEMENTATION((mln_data_ptr))
+    #define MLN_ADD_LOGS(mln_data_ptr, msg) MLN_ADD_LOGS_IMPLEMENTATION((mln_data_ptr), msg)
+    #define MLN_RUN_TEST(func_name) MLN_RUN_TEST_IMPLEMENTATION(MLN_GET_TEST_NAME_FROM_FUNC(func_name), #func_name, (&mln_data), mln_verbosity, (&mln_results), CLOCKS_PER_SEC)
 
 #endif
 
-#define __MLN_RESET_DATA_INTERNAL(data_name)        \
-    if(data_name.logs != NULL){\
-        free(data_name.logs);\
+//Used only in main function
+#define MLN_RESET_DATA_IMPLEMENTATION(mln_data_ptr)        \
+    if((mln_data_ptr)->logs != NULL){\
+        free((mln_data_ptr)->logs);\
     }\
-    data_name.logs = NULL;\
-    data_name.logs_size = 0;\
-    data_name.logs_length = 0;\
-    data_name.passes = 0;\
-    data_name.fails = 0;\
-    data_name.skips = 0;
+    (mln_data_ptr)->logs = NULL;\
+    (mln_data_ptr)->logs_size = 0;\
+    (mln_data_ptr)->logs_length = 0;\
+    (mln_data_ptr)->passes = 0;\
+    (mln_data_ptr)->fails = 0;\
+    (mln_data_ptr)->skips = 0;
 
-#define __MLN_ADD_LOGS_INTERNAL(logs_name, logs_length, logs_size, msg) \
+//Used only in tests
+#define MLN_ADD_LOGS_IMPLEMENTATION(mln_data_ptr, msg) \
     {\
-    const size_t __mln_msg_sizeof = sizeof msg;\
-    if(__mln_msg_sizeof > 1){\
-        const size_t __mln_msg_size = __mln_msg_sizeof - 1;\
+    const size_t mln_msg_sizeof = sizeof msg;\
+    if(mln_msg_sizeof > 1){\
+        const size_t mln_msg_size = mln_msg_sizeof - 1;\
     \
-        if(logs_length + __mln_msg_sizeof >= logs_size){\
-            __MLN_RESIZE_LOGS(logs_name, logs_length, logs_size, logs_length + __mln_msg_sizeof) \
+        if(mln_data_ptr->logs_length + mln_msg_sizeof >= mln_data_ptr->logs_size){\
+            MLN_RESIZE_LOGS_IMPLEMENTATION(mln_data_ptr, mln_data_ptr->logs_length + mln_msg_sizeof) \
         }\
     \
-        const size_t __mln_starting_index = logs_length == 0 ? 0 : logs_length - 1;\
+        const size_t mln_starting_index = mln_data_ptr->logs_length == 0 ? 0 : mln_data_ptr->logs_length - 1;\
         bool is_last_zero = false;\
-        size_t __mln_i = 0;\
-        for(; __mln_i < __mln_msg_size; ++__mln_i){\
-            is_last_zero = msg[__mln_i] == '\0';\
-            logs_name[__mln_starting_index + __mln_i] = msg[__mln_i];\
+        size_t mln_i = 0;\
+        for(; mln_i < mln_msg_size; ++mln_i){\
+            is_last_zero = msg[mln_i] == '\0';\
+            mln_data_ptr->logs[mln_starting_index + mln_i] = msg[mln_i];\
         }\
         if(!is_last_zero){\
-            logs_name[__mln_starting_index + __mln_i] = '\0';\
+            mln_data_ptr->logs[mln_starting_index + mln_i] = '\0';\
         }\
-        logs_length = sizeof logs_name;\
+        mln_data_ptr->logs_length = sizeof mln_data_ptr->logs;\
     }\
     }
 
-#define __MLN_RESIZE_LOGS_INTERNAL(logs_name, logs_length, logs_size, min_size) \
+//used only in tests
+#define MLN_RESIZE_LOGS_IMPLEMENTATION(mln_data_ptr, min_size) \
     {\
-    if(logs_size == 0){\
-        logs_size = min_size;\
-        logs_name = malloc(logs_size);\
+    if(mln_data_ptr->logs_size == 0){\
+        mln_data_ptr->logs_size = min_size;\
+        mln_data_ptr->logs = malloc(mln_data_ptr->logs_size);\
     }else{\
-        while(logs_size < min_size){\
-            logs_size = logs_size * 2;\
+        while(mln_data_ptr->logs_size < min_size){\
+            mln_data_ptr->logs_size = mln_data_ptr->logs_size * 2;\
         }\
         \
-        char* __mln_new_logs = malloc(logs_size);\
-        memcpy(__mln_new_logs, logs_name, logs_length);\
-        free(logs_name);\
-        logs_name = __mln_new_logs;\
+        char* mln_new_logs = malloc(mln_data_ptr->logs_size);\
+        memcpy(mln_new_logs, mln_data_ptr->logs, mln_data_ptr->logs_length);\
+        free(mln_data_ptr->logs);\
+        mln_data_ptr->logs = mln_new_logs;\
     }\
     }
 
-#define __MLN_DEFAULT_ASSERT_INTERNAL(expected, actual_value, msg, boolean_operation, assert_failed) \
+//used only in tests
+#define MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, expression, assert_failed, format) \
     {\
-    const bool __mln_result = expected boolean_operation actual_value;\
-    if(__mln_result){\
-        __mln_out_test_data->passes++;\
+    const bool mln_result = expression;\
+    if(mln_result){\
+        mln_data_ptr->passes++;\
     }else{\
-        MLN_FAILm(msg, #expected, #actual_value, "%s", ##assert_failed) \
+        MLN_FAILm(msg, expected, actual_value, format, ##assert_failed) \
     }\
     }
 
-#define __MLN_DEFAULT_ASSERT_STRN_INTERNAL(expected, actual_value, size, msg, boolean_operation, assert_failed)   \
+//used only in main
+#define MLN_RUN_TEST_IMPLEMENTATION(func_ptr, func_name_text, mln_data_ptr, mln_verbosity, mln_results_ptr, clocks_per_sec) \
     {\
-    const bool __mln_expected = strncmp(expected, actual_value, size) boolean_operation 0;\
-    if(__mln_expected){\
-        __mln_out_test_data->passes++;\
-    }else{\
-        MLN_FAILm(msg, expected, actual_value, "%s", ##assert_failed) \
-    }\
-    }
-
-#define __MLN_DEFAULT_ASSERT_STR_INTERNAL(expected, actual_value, msg, boolean_operation, assert_failed)   \
-    {\
-    const bool __mln_expected = strcmp(expected, actual_value) boolean_operation 0;\
-    if(__mln_expected){\
-        __mln_out_test_data->passes++;\
-    }else{\
-        MLN_FAILm(msg, expected, actual_value, "%s", ##assert_failed) \
-    }\
-    }
-
-#define __MLN_RUN_TEST_INTERNAL(func_name) \
-    {\
-    if(__mln_verbosity >= 2){\
-        printf("Testing n.%zu function [%s]...\n", __mln_current_test_count + 1, #func_name);\
+    if(mln_verbosity >= 2){\
+        printf("Testing n.%zu function [%s]...\n", mln_results_ptr->current_test_count + 1, func_name_text);\
     }\
     \
-    const clock_t __mln_current_test_start_time = clock();\
-    __mln_test_##func_name(&__mln_data, __mln_verbosity);\
-    const clock_t __mln_current_test_end_time = clock();\
+    const clock_t mln_current_test_start_time = clock();\
+    func_ptr((mln_data_ptr), mln_verbosity);\
+    const clock_t mln_current_test_end_time = clock();\
     \
-    __mln_current_test_count++;\
-    __mln_total_passes += __mln_data.passes;\
-    __mln_total_skips += __mln_data.skips;\
-    __mln_total_fails += __mln_data.fails;\
-    if(__mln_data.fails != 0){\
-        __mln_total_test_fails++;\
-    }else if(__mln_data.skips != 0){\
-        __mln_total_test_skips++;\
-    }else if(__mln_data.passes != 0){\
-        __mln_total_test_passes++;\
+    (mln_results_ptr->current_test_count)++;\
+    (mln_results_ptr->total_passes) += (mln_data_ptr)->passes;\
+    (mln_results_ptr->total_skips) += (mln_data_ptr)->skips;\
+    (mln_results_ptr->total_fails) += (mln_data_ptr)->fails;\
+    if((mln_data_ptr)->fails != 0){\
+        (mln_results_ptr->total_test_fails)++;\
+    }else if((mln_data_ptr)->skips != 0){\
+        (mln_results_ptr->total_test_skips)++;\
+    }else if((mln_data_ptr)->passes != 0){\
+        (mln_results_ptr->total_test_passes)++;\
     }\
     \
-    bool __mln_logs_used = false;\
-    if(__mln_data.logs_length > 0){\
-        printf("%s\n", __mln_data.logs);\
-        __mln_logs_used = true;\
+    bool mln_logs_used = false;\
+    if((mln_data_ptr)->logs_length > 0){\
+        printf("%s\n", (mln_data_ptr)->logs);\
+        mln_logs_used = true;\
     }\
-    if(__mln_data.fails != 0 && __mln_verbosity > 0){\
-        printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", __mln_data.passes, __mln_data.skips, __mln_data.fails);\
-        __mln_logs_used = true;\
+    if((mln_data_ptr)->fails != 0 && mln_verbosity > 0){\
+        printf("Passes count: %zu, skips count: %zu, fails count: %zu\n", (mln_data_ptr)->passes, (mln_data_ptr)->skips, (mln_data_ptr)->fails);\
+        mln_logs_used = true;\
     }\
-    if((__mln_verbosity == 1 && __mln_data.fails != 0) || __mln_verbosity >= 2){\
-        printf("Estimated elapsed seconds: %.3lf\n", (double)(__mln_current_test_end_time - __mln_current_test_start_time) / CLOCKS_PER_SEC);\
-        __mln_logs_used = true;\
+    if((mln_verbosity == 1 && (mln_data_ptr)->fails != 0) || mln_verbosity >= 2){\
+        printf("Estimated elapsed seconds: %.3lf\n", (double)(mln_current_test_end_time - mln_current_test_start_time) / (clocks_per_sec));\
+        mln_logs_used = true;\
     }\
-    if(__mln_logs_used){\
+    if(mln_logs_used){\
         printf("\n");\
     }\
-    __MLN_RESET_DATA(__mln_data)\
+    MLN_RESET_DATA(mln_data_ptr)\
     }
 
-#define __MLN_FAILm_INTERNAL(msg, expected, actual, format, assert_failed) \
+//used only in tests
+#define MLN_FAILm_IMPLEMENTATION(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed) \
     {\
-    __mln_out_test_data->fails++;\
-    __MLN_ADD_LOGS(__mln_out_test_data->logs, __mln_out_test_data->logs_length, __mln_out_test_data->logs_size, msg) \
-    const char* __mln_format_string = format;\
-    const size_t __mln_format_size = sizeof __mln_format_string;\
+    mln_data_ptr->fails++;\
+    MLN_ADD_LOGS(mln_data_ptr, msg) \
+    const char* mln_format_string = format;\
+    const size_t mln_format_size = sizeof mln_format_string;\
     printf(#assert_failed " failed! ");\
-    if(__mln_format_size >= 2 && __mln_verbosity > 0)\
+    if(mln_format_size >= 2 && mln_verbosity > 0)\
     {\
         printf("Expected [");\
-        printf(__mln_format_string, expected);\
+        printf(mln_format_string, expected);\
         printf("] Actual [");\
-        printf(__mln_format_string, actual);\
+        printf(mln_format_string, actual);\
         printf("]");\
     }\
     printf("\n");\
     }\
     return;
 
+//used only in tests
+#define MLN_SKIPm_IMPLEMENTATION(msg, mln_data_ptr)\
+    mln_data_ptr->skips++;\
+    if(mln_verbosity > 0){\
+        MLN_ADD_LOGS(mln_data_ptr, msg) \
+    }\
+    return;
+
+//used only in tests
+#define MLN_PASS_IMPLEMENTATION(mln_data_ptr)\
+    mln_data_ptr->passes++;\
+    return;
+
+//used only in main
+#define MLN_SET_LOGS_VERBOSITY_IMPLEMENTATION(in_verbosity, out_verbosity)\
+    if(in_verbosity <= 0){\
+        out_verbosity = 0;\
+    }else if(in_verbosity >= 2){\
+        out_verbosity = 2;\
+    }else{\
+        out_verbosity = 1;\
+    }
+
+//used only in defining test functions
+#define MLN_TEST_IMPLEMENTATION(full_func_name, ...)\
+    void full_func_name (mln_test_data* mln_data_ptr, const size_t mln_verbosity){\
+    __VA_ARGS__ \
+    }
+
+//used only in main
+#define MLN_PRE_TESTS_IMPLEMENTATION          \
+    const clock_t mln_start_time = clock();\
+    size_t mln_verbosity = 0;\
+    mln_test_results mln_results;\
+    mln_results.total_passes = 0;\
+    mln_results.total_fails = 0;\
+    mln_results.total_skips = 0;\
+    mln_results.current_test_count = 0;\
+    mln_results.total_test_passes = 0;\
+    mln_results.total_test_fails = 0;\
+    mln_results.total_test_skips = 0;\
+    mln_test_data mln_data;\
+    mln_data.logs = NULL;\
+    MLN_RESET_DATA(&mln_data) 
+
+//used only in main
+#define MLN_POST_TESTS_IMPLEMENTATION         \
+    const size_t mln_total_results = mln_results.total_passes + mln_results.total_fails + mln_results.total_skips;\
+    const size_t mln_total_test_results = mln_results.total_test_passes + mln_results.total_test_fails + mln_results.total_test_skips;\
+    const clock_t mln_end_time = clock();\
+    printf("Tests over. Results...\n");\
+    printf("Tests passed: %zu/%zu. Total asserts passed: %zu/%zu\n", mln_results.total_test_passes, mln_total_test_results, mln_results.total_passes, mln_total_results);\
+    printf("Tests skiped: %zu/%zu. Total asserts skipped: %zu/%zu\n", mln_results.total_test_skips, mln_total_test_results, mln_results.total_skips, mln_total_results);\
+    printf("Tests failed: %zu/%zu. Total asserts failed: %zu/%zu\n", mln_results.total_test_fails, mln_total_test_results, mln_results.total_fails, mln_total_results);\
+    printf("Tests failed percentage: %Lf%%, Asserts failed percentage: %Lf%% \n", \
+    ((long double)(mln_results.total_test_fails) / mln_total_test_results) * 100.0, \
+    ((long double)(mln_results.total_fails) / mln_total_results) * 100.0);\
+    printf("Approximate seconds elapsed: %.3lf\n", (double)(mln_end_time - mln_start_time) / CLOCKS_PER_SEC);\
+    printf("Press any keys to close...\n");\
+    getchar();
 
 #endif
