@@ -116,6 +116,12 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define ASSERT_MEM_EQ(expected, actual, size, stop_test_on_fail) MLN_ASSERT_MEM_EQ(expected, actual, size, stop_test_on_fail)
     #define ASSERT_MEM_EQm(expected, actual, size, msg, stop_test_on_fail) MLN_ASSERT_MEM_EQm(expected, actual, size, msg, stop_test_on_fail)
     /*
+    Assert that the first size bytes of memory pointed to by expected and actual are equal. If not, print a hexdump and highlight the lines and individual bytes which do not match.
+    Expected and actual might be evaluated more than once
+    */
+    #define ASSERT_MEM_NEQ(expected, actual, size, stop_test_on_fail) MLN_ASSERT_MEM_NEQ(expected, actual, size, stop_test_on_fail)
+    #define ASSERT_MEM_NEQm(expected, actual, size, msg, stop_test_on_fail) MLN_ASSERT_MEM_NEQm(expected, actual, size, msg, stop_test_on_fail)
+    /*
     Assert that expected == actual_value
     Expected and actual_value might be evaluated more than once
     */

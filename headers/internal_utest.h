@@ -80,9 +80,13 @@ typedef struct test_results{
 
 #define MLN_ASSERT_NNULLm(value, msg, stop_test_on_fail) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), NULL, value, msg, (NULL != value), ##MLN_ASSERT_NNULLm, "%p", GENERIC, stop_test_on_fail)
 
-#define MLN_ASSERT_MEM_EQ(expected, actual, size, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT((mln_data_ptr), expected, actual, size, MLN_DEFAULT_FAIL_MSG, ##MLN_ASSERT_MEM_EQ, stop_test_on_fail)
+#define MLN_ASSERT_MEM_EQ(expected, actual, size, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT((mln_data_ptr), expected, actual, size, true, MLN_DEFAULT_FAIL_MSG, ##MLN_ASSERT_MEM_EQ, stop_test_on_fail)
 
-#define MLN_ASSERT_MEM_EQm(expected, actual, size, msg, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT((mln_data_ptr), expected, actual, size, msg, ##MLN_ASSERT_MEM_EQm, stop_test_on_fail)
+#define MLN_ASSERT_MEM_EQm(expected, actual, size, msg, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT((mln_data_ptr), expected, actual, size, true, msg, ##MLN_ASSERT_MEM_EQm, stop_test_on_fail)
+
+#define MLN_ASSERT_MEM_NEQ(expected, actual, size, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT((mln_data_ptr), expected, actual, size, false, MLN_DEFAULT_FAIL_MSG, ##MLN_ASSERT_MEM_NEQ, stop_test_on_fail)
+
+#define MLN_ASSERT_MEM_NEQm(expected, actual, size, msg, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT((mln_data_ptr), expected, actual, size, false, msg, ##MLN_ASSERT_MEM_NEQm, stop_test_on_fail)
 
 #define MLN_ASSERT_EQ(expected, actual_value, stop_test_on_fail) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), #expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected == actual_value), ##MLN_ASSERT_EQ, "%s", STRING, stop_test_on_fail)
 
@@ -188,33 +192,25 @@ typedef struct test_results{
 
 #define MLN_ASSERT_STR_LTEm(expected, actual_value, msg, stop_test_on_fail) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, msg, (strcmp(expected, actual_value) <= 0), ##MLN_ASSERT_STR_LTEm, "%s", STRING, stop_test_on_fail)
 
-/*
-
-TODO
-
-ASSERT_EQUAL_T(EXPECTED, ACTUAL, TYPE_INFO, UDATA)
-Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function pointed to by TYPE_INFO->equal to compare them. The assertion's UDATA argument can be used to pass in arbitrary user data (or NULL) to the callbacks. If the values are not equal and the TYPE_INFO->print function is defined, it will be used to print an "Expected: X, Got: Y" message.
-*/
-
 
 #ifdef MLN_REDUCE_MACROS_TO_FUNCTIONS
 
     #define MLN_RESET_DATA(mln_data_ptr) MLN_RESET_DATA_IMPLEMENTATION_FUNC((mln_data_ptr))
     #define MLN_ADD_LOGS(mln_data_ptr, msg) MLN_ADD_LOGS_IMPLEMENTATION_FUNC((mln_data_ptr), msg)
     #define MLN_RUN_TEST(func_name) MLN_RUN_TEST_IMPLEMENTATION_FUNC(func_name)
-    #define MLN_DEFAULT_MEM_ASSERT(mln_data_ptr, expected, actual, size, msg, assert_failed, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT_FUNC(mln_data_ptr, expected, actual, size, msg, assert_failed, stop_test_on_fail)
+    #define MLN_DEFAULT_MEM_ASSERT(mln_data_ptr, expected, actual, size, equality, msg, assert_failed, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT_FUNC(mln_data_ptr, expected, actual, size, equality, msg, assert_failed, stop_test_on_fail)
 
     #define MLN_RESET_DATA_IMPLEMENTATION_FUNC(mln_data_ptr) mln_reset_data_implementation_func_call(mln_data_ptr);
     #define MLN_ADD_LOGS_IMPLEMENTATION_FUNC(mln_data_ptr, msg) mln_add_logs_implementation_func_call(mln_data_ptr, msg);
     #define MLN_RUN_TEST_IMPLEMENTATION_FUNC(func_name) mln_run_test_implementation_func_call(&(MLN_GET_TEST_NAME_FROM_FUNC(func_name)), #func_name, &mln_data, mln_verbosity, &mln_results, CLOCKS_PER_SEC);
     #define MLN_FAILm_IMPLEMENTATION_STRING(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed, stop_test_on_fail) mln_failm_implementation_string_func_call(mln_data_ptr, mln_verbosity, msg, expected, actual, #assert_failed, stop_test_on_fail); 
-    #define MLN_DEFAULT_MEM_ASSERT_FUNC(mln_data_ptr, expected, actual, size, msg, assert_failed, stop_test_on_fail) mln_default_mem_assert_func_call(mln_data_ptr, expected, actual, size, msg, #assert_failed, stop_test_on_fail);
+    #define MLN_DEFAULT_MEM_ASSERT_FUNC(mln_data_ptr, expected, actual, size, equality, msg, assert_failed, stop_test_on_fail) mln_default_mem_assert_func_call(mln_data_ptr, expected, actual, size, equality, msg, #assert_failed, stop_test_on_fail);
 
     void mln_failm_implementation_string_func_call(mln_test_data* mln_data_ptr, const size_t mln_verbosity, const char* msg, const char* expected, const char* actual, const char* assert_failed, const bool stop_test_on_fail); 
     void mln_reset_data_implementation_func_call(mln_test_data* mln_data_ptr);
     void mln_add_logs_implementation_func_call(mln_test_data* mln_data_ptr, const char* msg);
     void mln_run_test_implementation_func_call(void(*func_ptr)(mln_test_data*, const size_t),  const char* func_name_text, mln_test_data* mln_data_ptr,  const size_t mln_verbosity,  mln_test_results* mln_results_ptr, const clock_t clocks_per_sec);
-    void mln_default_mem_assert_func_call(mln_test_data* mln_data_ptr, const char* data_a, const char* data_b, const size_t size, const char* msg, const char* assert_failed, const bool stop_test_on_fail);
+    void mln_default_mem_assert_func_call(mln_test_data* mln_data_ptr, const char* data_a, const char* data_b, const size_t size, const bool equality, const char* msg, const char* assert_failed, const bool stop_test_on_fail);
 
     #define MLN_TEST_FUNC_DEFINITIONS\
         void mln_reset_data_implementation_func_call(mln_test_data* mln_data_ptr){\
@@ -238,8 +234,8 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
         void mln_failm_implementation_string_func_call(mln_test_data* mln_data_ptr, const size_t mln_verbosity, const char* msg, const char* expected, const char* actual, const char* assert_failed, const bool stop_test_on_fail){\
             MLN_FAILm_IMPLEMENTATION_GENERIC(mln_data_ptr, mln_verbosity, msg, expected, actual, "%s", assert_failed, stop_test_on_fail)\
         }\
-        void mln_default_mem_assert_func_call(mln_test_data* mln_data_ptr, const char* data_a, const char* data_b, const size_t size, const char* msg, const char* assert_failed, const bool stop_test_on_fail){\
-           MLN_DEFAULT_MEM_ASSERT_IMPLEMENTATION(mln_data_ptr, data_a, data_b, size, msg, assert_failed, stop_test_on_fail) \
+        void mln_default_mem_assert_func_call(mln_test_data* mln_data_ptr, const char* data_a, const char* data_b, const size_t size, const bool equality, const char* msg, const char* assert_failed, const bool stop_test_on_fail){\
+           MLN_DEFAULT_MEM_ASSERT_IMPLEMENTATION(mln_data_ptr, data_a, data_b, size, equality, msg, assert_failed, stop_test_on_fail) \
         }
     
 #else
@@ -249,7 +245,7 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     #define MLN_ADD_LOGS(mln_data_ptr, msg) MLN_ADD_LOGS_IMPLEMENTATION((mln_data_ptr), msg)
     #define MLN_RUN_TEST(func_name) MLN_RUN_TEST_IMPLEMENTATION(MLN_GET_TEST_NAME_FROM_FUNC(func_name), #func_name, (&mln_data), mln_verbosity, (&mln_results), CLOCKS_PER_SEC)
     #define MLN_FAILm_IMPLEMENTATION_STRING(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed, stop_test_on_fail) MLN_FAILm_IMPLEMENTATION_GENERIC(mln_data_ptr, mln_verbosity, msg, expected, actual, "%s", #assert_failed, stop_test_on_fail)
-    #define MLN_DEFAULT_MEM_ASSERT(mln_data_ptr, expected, actual, size, msg, assert_failed, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT_IMPLEMENTATION(mln_data_ptr, expected, actual, size, msg, #assert_failed, stop_test_on_fail)
+    #define MLN_DEFAULT_MEM_ASSERT(mln_data_ptr, expected, actual, size, equality, msg, assert_failed, stop_test_on_fail) MLN_DEFAULT_MEM_ASSERT_IMPLEMENTATION(mln_data_ptr, expected, actual, size, equality, msg, #assert_failed, stop_test_on_fail)
 
 #endif
 
@@ -337,14 +333,18 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     }
 
 //used only in tests
-#define MLN_DEFAULT_MEM_ASSERT_IMPLEMENTATION(mln_data_ptr, expected, actual, size, msg, assert_failed, stop_test_on_fail)\
+#define MLN_DEFAULT_MEM_ASSERT_IMPLEMENTATION(mln_data_ptr, expected, actual, size, equality, msg, assert_failed, stop_test_on_fail)\
     {\
         bool mln_is_mem_equal = true;\
         for(size_t mln_i = 0; mln_is_mem_equal && mln_i < size; ++mln_i){\
             const unsigned char expected_byte = (unsigned char)expected[mln_i];\
             const unsigned char actual_byte = (unsigned char)actual[mln_i];\
             \
-            mln_is_mem_equal = expected_byte == actual_byte;\
+            if(equality){\
+                mln_is_mem_equal = expected_byte == actual_byte;\
+            }else{\
+                mln_is_mem_equal = expected_byte != actual_byte;\
+            }\
         }\
             \
         if(mln_is_mem_equal){\
@@ -358,7 +358,12 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
                 const unsigned char expected_byte = (unsigned char)expected[mln_i];\
                 const unsigned char actual_byte = (unsigned char)actual[mln_i];\
                 \
-                const bool mln_is_byte_equal = expected_byte == actual_byte;\
+                bool mln_is_byte_equal;\
+                if(equality){\
+                    mln_is_byte_equal = expected_byte == actual_byte;\
+                }else{\
+                    mln_is_byte_equal = expected_byte != actual_byte;\
+                }\
                 printf("%zu.  0x%2hhX", mln_i, expected_byte);\
                 printf("%s", mln_is_byte_equal ? " == " : " != ");\
                 printf("0x%2hhX\n", actual_byte);\
