@@ -54,118 +54,139 @@ typedef struct test_results{
 
 #define MLN_SET_LOGS_VERBOSITY(verbosity) MLN_SET_LOGS_VERBOSITY_IMPLEMENTATION(verbosity, mln_verbosity)
 
-#define MLN_FAIL() MLN_FAILm(MLN_DEFAULT_FAIL_MSG, "Fail", "Fail", "%s", ##MLN_FAIL)
+#define MLN_FAIL() MLN_FAILm_IMPLEMENTATION_STRING((mln_data_ptr), mln_verbosity, MLN_DEFAULT_FAIL_MSG, "Fail", "Fail", "%s", ##MLN_FAIL)
 
-#define MLN_FAILm(msg, expected, actual, format, assert_failed) MLN_FAILm_IMPLEMENTATION((mln_data_ptr), mln_verbosity, msg, expected, actual, #format, #assert_failed)
+#define MLN_FAILm(msg) MLN_FAILm_IMPLEMENTATION_STRING((mln_data_ptr), mln_verbosity, msg, "Fail", "Fail", "%s", ##MLN_FAILm)
 
 #define MLN_PASS() MLN_PASS_IMPLEMENTATION(mln_data_ptr)
 
-#define MLN_SKIP() MLN_SKIPm(MLN_DEFAULT_SKIP_MSG)
+#define MLN_SKIP() MLN_SKIPm_IMPLEMENTATION(MLN_DEFAULT_SKIP_MSG, mln_data_ptr)
 
 #define MLN_SKIPm(msg) MLN_SKIPm_IMPLEMENTATION(msg, mln_data_ptr)
 
-#define MLN_ASSERT(condition) MLN_ASSERTm(condition, MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT(condition) MLN_DEFAULT_ASSERT_IMPLEMENTATION("true", condition ? "true" : "false", MLN_DEFAULT_FAIL_MSG, (condition), ##MLN_ASSERT, "%s", STRING)
 
-#define MLN_ASSERTm(condition, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION("true", condition ? "true" : "false", msg, (condition), ##MLN_ASSERT, "%s")
+#define MLN_ASSERTm(condition, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION("true", condition ? "true" : "false", msg, (condition), ##MLN_ASSERTm, "%s", STRING)
 
-#define MLN_ASSERT_FALSE(condition) MLN_ASSERT_FALSEm(condition, MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_FALSE(condition) MLN_DEFAULT_ASSERT_IMPLEMENTATION("false", condition ? "true" : "false", MLN_DEFAULT_FAIL_MSG, (!condition), ##MLN_ASSERT_FALSE, "%s", STRING)
 
-#define MLN_ASSERT_FALSEm(condition, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION("false", condition ? "true" : "false", msg, (!condition), ##MLN_ASSERT_FALSE, "%s")
+#define MLN_ASSERT_FALSEm(condition, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION("false", condition ? "true" : "false", msg, (!condition), ##MLN_ASSERT_FALSEm, "%s", STRING)
 
-#define MLN_ASSERT_NULL(value) MLN_ASSERT_NULLm(value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_NULL(value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, MLN_DEFAULT_FAIL_MSG, (NULL == value), ##MLN_ASSERT_NULL, "%p", GENERIC)
 
-#define MLN_ASSERT_NULLm(value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, msg, (NULL == value), ##MLN_ASSERT_NULL, "%p")
+#define MLN_ASSERT_NULLm(value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, msg, (NULL == value), ##MLN_ASSERT_NULLm, "%p", GENERIC)
 
-#define MLN_ASSERT_NNULL(value) MLN_ASSERT_NNULLm(value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_NNULL(value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, MLN_DEFAULT_FAIL_MSG, (NULL != value), ##MLN_ASSERT_NNULL, "%p", GENERIC)
 
-#define MLN_ASSERT_NNULLm(value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, msg, (NULL != value), ##MLN_ASSERT_NNULL, "%p")
+#define MLN_ASSERT_NNULLm(value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(NULL, value, msg, (NULL != value), ##MLN_ASSERT_NNULLm, "%p", GENERIC)
 
-#define MLN_ASSERT_EQ(expected, actual_value) MLN_ASSERT_EQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_EQ(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected == actual_value), ##MLN_ASSERT_EQ, "%s", STRING)
 
-#define MLN_ASSERT_EQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected == actual_value), ##MLN_ASSERT_EQ, "%s")
+#define MLN_ASSERT_EQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected == actual_value), ##MLN_ASSERT_EQm, "%s", STRING)
 
-#define MLN_ASSERT_EQ_FORMAT(expected, actual_value, format) MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_EQf(expected, actual_value, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected == actual_value), ##MLN_ASSERT_EQf, format, GENERIC)
 
-#define MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected == actual_value), ##MLN_ASSERT_EQ, format)
+#define MLN_ASSERT_EQfm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected == actual_value), ##MLN_ASSERT_EQfm, format, GENERIC)
 
-#define MLN_ASSERT_NEQ(expected, actual_value) MLN_ASSERT_NEQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG) 
+#define MLN_ASSERT_NEQ(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected != actual_value), ##MLN_ASSERT_NEQ, "%s", STRING)
 
-#define MLN_ASSERT_NEQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected != actual_value), ##MLN_ASSERT_NEQ, "%s")
+#define MLN_ASSERT_NEQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected != actual_value), ##MLN_ASSERT_NEQm, "%s", STRING)
 
-#define MLN_ASSERT_GT(expected, actual_value) MLN_ASSERT_GTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_NEQf(expected, actual_value, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected != actual_value), ##MLN_ASSERT_NEQf, format, GENERIC)
 
-#define MLN_ASSERT_GTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected > actual_value), ##MLN_ASSERT_GT, "%s")
+#define MLN_ASSERT_NEQfm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected != actual_value), ##MLN_ASSERT_NEQfm, format, GENERIC)
 
-#define MLN_ASSERT_GTE(expected, actual_value) MLN_ASSERT_GTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_GT(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected > actual_value), ##MLN_ASSERT_GT, "%s", STRING)
 
-#define MLN_ASSERT_GTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected >= actual_value), ##MLN_ASSERT_GTE, "%s")
+#define MLN_ASSERT_GTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected > actual_value), ##MLN_ASSERT_GTm, "%s", STRING)
 
-#define MLN_ASSERT_LT(expected, actual_value) MLN_ASSERT_LTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_GTf(expected, actual_value, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected > actual_value), ##MLN_ASSERT_GTf, format, GENERIC)
 
-#define MLN_ASSERT_LTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected < actual_value), ##MLN_ASSERT_LT, "%s")
+#define MLN_ASSERT_GTfm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected > actual_value), ##MLN_ASSERT_GTfm, format, GENERIC)
 
-#define MLN_ASSERT_LTE(expected, actual_value) MLN_ASSERT_LTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_GTE(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected >= actual_value), ##MLN_ASSERT_GTE, "%s", STRING)
 
-#define MLN_ASSERT_LTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected <= actual_value), ##MLN_ASSERT_LTE, "%s")
+#define MLN_ASSERT_GTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected >= actual_value), ##MLN_ASSERT_GTEm, "%s", STRING)
 
-#define MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance) MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_GTEf(expected, actual_value, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected >= actual_value), ##MLN_ASSERT_GTEf, format, GENERIC)
 
-#define MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), ##MLN_ASSERT_IN_RANGE, "%s")
+#define MLN_ASSERT_GTEfm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected >= actual_value), ##MLN_ASSERT_GTEfm, format, GENERIC)
 
-#define MLN_ASSERT_STRN_EQ(expected, actual_value, size) MLN_ASSERT_STRN_EQm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_LT(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected < actual_value), ##MLN_ASSERT_LT, "%s", STRING)
 
-#define MLN_ASSERT_STRN_EQm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) == 0), ##MLN_ASSERT_STRN_EQ, "%s")
+#define MLN_ASSERT_LTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected < actual_value), ##MLN_ASSERT_LTm, "%s", STRING)
 
-#define MLN_ASSERT_STRN_NEQ(expected, actual_value, size) MLN_ASSERT_STRN_NEQm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_LTf(expected, actual_value, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected < actual_value), ##MLN_ASSERT_LTf, format, GENERIC)
 
-#define MLN_ASSERT_STRN_NEQm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) != 0), ##MLN_ASSERT_STRN_NEQ, "%s")
+#define MLN_ASSERT_LTfm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected < actual_value), ##MLN_ASSERT_LTfm, format, GENERIC)
 
-#define MLN_ASSERT_STRN_GT(expected, actual_value, size) MLN_ASSERT_STRN_GTm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_LTE(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected <= actual_value), ##MLN_ASSERT_LTE, "%s", STRING)
 
-#define MLN_ASSERT_STRN_GTm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) > 0), ##MLN_ASSERT_STRN_GT, "%s")
+#define MLN_ASSERT_LTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected <= actual_value), ##MLN_ASSERT_LTEm, "%s", STRING)
 
-#define MLN_ASSERT_STRN_GTE(expected, actual_value, size) MLN_ASSERT_STRN_GTEm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_LTEf(expected, actual_value, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected <= actual_value), ##MLN_ASSERT_LTEf, format, GENERIC)
 
-#define MLN_ASSERT_STRN_GTEm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) >= 0), ##MLN_ASSERT_STRN_GTE, "%s")
+#define MLN_ASSERT_LTEfm(expected, actual_value, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected <= actual_value), ##MLN_ASSERT_LTEfm, format, GENERIC)
 
-#define MLN_ASSERT_STRN_LT(expected, actual_value, size) MLN_ASSERT_STRN_LTm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), ##MLN_ASSERT_IN_RANGE, "%s", STRING)
 
-#define MLN_ASSERT_STRN_LTm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) < 0), ##MLN_ASSERT_STRN_LT, "%s")
+#define MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(#expected, #actual_value, msg, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), ##MLN_ASSERT_IN_RANGEm, "%s", STRING)
 
-#define MLN_ASSERT_STRN_LTE(expected, actual_value, size) MLN_ASSERT_STRN_LTEm(expected, actual_value, size, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_IN_RANGEf(expected, actual_value, tollerance, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), ##MLN_ASSERT_IN_RANGEf, format, GENERIC)
 
-#define MLN_ASSERT_STRN_LTEm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) <= 0), ##MLN_ASSERT_STRN_LTE, "%s")
+#define MLN_ASSERT_IN_RANGEfm(expected, actual_value, tollerance, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), ##MLN_ASSERT_IN_RANGEfm, format, GENERIC)
 
-#define MLN_ASSERT_STR_EQ(expected, actual_value) MLN_ASSERT_STR_EQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_STRN_EQ(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) == 0), ##MLN_ASSERT_STRN_EQ, "%s", STRING)
 
-#define MLN_ASSERT_STR_EQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) == 0), ##MLN_ASSERT_STR_EQ, "%s")
+#define MLN_ASSERT_STRN_EQm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) == 0), ##MLN_ASSERT_STRN_EQm, "%s", STRING)
 
-#define MLN_ASSERT_STR_NEQ(expected, actual_value) MLN_ASSERT_STR_NEQm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_STRN_NEQ(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) != 0), ##MLN_ASSERT_STRN_NEQ, "%s", STRING)
 
-#define MLN_ASSERT_STR_NEQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) != 0), ##MLN_ASSERT_STR_NEQ, "%s")
+#define MLN_ASSERT_STRN_NEQm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) != 0), ##MLN_ASSERT_STRN_NEQm, "%s", STRING)
 
-#define MLN_ASSERT_STR_GT(expected, actual_value) MLN_ASSERT_STR_GTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_STRN_GT(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) > 0), ##MLN_ASSERT_STRN_GT, "%s", STRING)
 
-#define MLN_ASSERT_STR_GTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) > 0), ##MLN_ASSERT_STR_GT, "%s")
+#define MLN_ASSERT_STRN_GTm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) > 0), ##MLN_ASSERT_STRN_GTm, "%s", STRING)
 
-#define MLN_ASSERT_STR_GTE(expected, actual_value) MLN_ASSERT_STR_GTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_STRN_GTE(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) >= 0), ##MLN_ASSERT_STRN_GTE, "%s", STRING)
 
-#define MLN_ASSERT_STR_GTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) >= 0), ##MLN_ASSERT_STR_GTE, "%s")
+#define MLN_ASSERT_STRN_GTEm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) >= 0), ##MLN_ASSERT_STRN_GTEm, "%s", STRING)
 
-#define MLN_ASSERT_STR_LT(expected, actual_value) MLN_ASSERT_STR_LTm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_STRN_LT(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) < 0), ##MLN_ASSERT_STRN_LT, "%s", STRING)
 
-#define MLN_ASSERT_STR_LTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) < 0), ##MLN_ASSERT_STR_LT, "%s")
+#define MLN_ASSERT_STRN_LTm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) < 0), ##MLN_ASSERT_STRN_LTm, "%s", STRING)
 
-#define MLN_ASSERT_STR_LTE(expected, actual_value) MLN_ASSERT_STR_LTEm(expected, actual_value, MLN_DEFAULT_FAIL_MSG)
+#define MLN_ASSERT_STRN_LTE(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) <= 0), ##MLN_ASSERT_STRN_LTE, "%s", STRING)
 
-#define MLN_ASSERT_STR_LTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) <= 0), ##MLN_ASSERT_STR_LTE, "%s")
+#define MLN_ASSERT_STRN_LTEm(expected, actual_value, size, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strncmp(expected, actual_value, size) <= 0), ##MLN_ASSERT_STRN_LTEm, "%s", STRING)
+
+#define MLN_ASSERT_STR_EQ(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strcmp(expected, actual_value) == 0), ##MLN_ASSERT_STR_EQ, "%s", STRING)
+
+#define MLN_ASSERT_STR_EQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) == 0), ##MLN_ASSERT_STR_EQm, "%s", STRING)
+
+#define MLN_ASSERT_STR_NEQ(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strcmp(expected, actual_value) != 0), ##MLN_ASSERT_STR_NEQ, "%s", STRING)
+
+#define MLN_ASSERT_STR_NEQm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) != 0), ##MLN_ASSERT_STR_NEQm, "%s", STRING)
+
+#define MLN_ASSERT_STR_GT(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strcmp(expected, actual_value) > 0), ##MLN_ASSERT_STR_GT, "%s", STRING)
+
+#define MLN_ASSERT_STR_GTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) > 0), ##MLN_ASSERT_STR_GTm, "%s", STRING)
+
+#define MLN_ASSERT_STR_GTE(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strcmp(expected, actual_value) >= 0), ##MLN_ASSERT_STR_GTE, "%s", STRING)
+
+#define MLN_ASSERT_STR_GTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) >= 0), ##MLN_ASSERT_STR_GTEm, "%s", STRING)
+
+#define MLN_ASSERT_STR_LT(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strcmp(expected, actual_value) < 0), ##MLN_ASSERT_STR_LT, "%s", STRING)
+
+#define MLN_ASSERT_STR_LTm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) < 0), ##MLN_ASSERT_STR_LTm, "%s", STRING)
+
+#define MLN_ASSERT_STR_LTE(expected, actual_value) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strcmp(expected, actual_value) <= 0), ##MLN_ASSERT_STR_LTE, "%s", STRING)
+
+#define MLN_ASSERT_STR_LTEm(expected, actual_value, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, (strcmp(expected, actual_value) <= 0), ##MLN_ASSERT_STR_LTEm, "%s", STRING)
 
 /*
 
 TODO
-
-As of now assert fail messagges show the var name instead of the value when printing logs (since i simply do #expected and #actual most of the time)
-Fix it somehow and take into account the need for fail macro to be a func if related define is on
 
 ASSERT_MEM_EQ(EXPECTED, ACTUAL, SIZE)
 Assert that the first SIZE bytes of memory pointed to by EXPECTED and ACTUAL are equal. If their memory differs, print a hexdump and highlight the lines and individual bytes which do not match.
@@ -184,8 +205,9 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     #define MLN_RESET_DATA_IMPLEMENTATION_FUNC(mln_data_ptr) mln_reset_data_implementation_func_call(mln_data_ptr);
     #define MLN_ADD_LOGS_IMPLEMENTATION_FUNC(mln_data_ptr, msg) mln_add_logs_implementation_func_call(mln_data_ptr, msg);
     #define MLN_RUN_TEST_IMPLEMENTATION_FUNC(func_name) mln_run_test_implementation_func_call(&(MLN_GET_TEST_NAME_FROM_FUNC(func_name)), #func_name, &mln_data, mln_verbosity, &mln_results, CLOCKS_PER_SEC);
+    #define MLN_FAILm_IMPLEMENTATION_STRING(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed) mln_failm_implementation_string_func_call(mln_data_ptr, mln_verbosity, msg, expected, actual, #assert_failed); 
 
-
+    void mln_failm_implementation_string_func_call(mln_test_data* mln_data_ptr, const size_t mln_verbosity, const char* msg, const char* expected, const char* actual, const char* assert_failed); 
     void mln_reset_data_implementation_func_call(mln_test_data* mln_data_ptr);
     void mln_add_logs_implementation_func_call(mln_test_data* mln_data_ptr, const char* msg);
     void mln_run_test_implementation_func_call(void(*func_ptr)(mln_test_data*, const size_t),  const char* func_name_text, mln_test_data* mln_data_ptr,  const size_t mln_verbosity,  mln_test_results* mln_results_ptr, const clock_t clocks_per_sec);
@@ -208,6 +230,10 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
         mln_test_results* mln_results_ptr,\
         const clock_t clocks_per_sec){\
             MLN_RUN_TEST_IMPLEMENTATION(func_ptr, func_name_text, mln_data_ptr, mln_verbosity, mln_results_ptr, clocks_per_sec)\
+        }\
+        \
+        void mln_failm_implementation_string_func_call(mln_test_data* mln_data_ptr, const size_t mln_verbosity, const char* msg, const char* expected, const char* actual, const char* assert_failed){\
+            MLN_FAILm_IMPLEMENTATION_GENERIC(mln_data_ptr, mln_verbosity, msg, expected, actual, "%s", assert_failed)\
         }
     
 #else
@@ -216,6 +242,7 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     #define MLN_RESET_DATA(mln_data_ptr) MLN_RESET_DATA_IMPLEMENTATION((mln_data_ptr))
     #define MLN_ADD_LOGS(mln_data_ptr, msg) MLN_ADD_LOGS_IMPLEMENTATION((mln_data_ptr), msg)
     #define MLN_RUN_TEST(func_name) MLN_RUN_TEST_IMPLEMENTATION(MLN_GET_TEST_NAME_FROM_FUNC(func_name), #func_name, (&mln_data), mln_verbosity, (&mln_results), CLOCKS_PER_SEC)
+    #define MLN_FAILm_IMPLEMENTATION_STRING(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed) MLN_FAILm_IMPLEMENTATION_GENERIC(mln_data_ptr, mln_verbosity, msg, expected, actual, "%s", #assert_failed)
 
 #endif
 
@@ -231,28 +258,45 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     (mln_data_ptr)->fails = 0;\
     (mln_data_ptr)->skips = 0;
 
+
+#define MLN_GET_CHAR_ARRAY_LENGTH(msg, out_length) \
+    {\
+        (out_length) = 0;\
+        size_t mln_i = 0;\
+        char mln_letter;\
+        if(msg != NULL){\
+            do{\
+                mln_letter = (msg)[mln_i++];\
+            }while(mln_letter != '\0');\
+        }\
+        if(mln_i > 0){\
+            (out_length) = mln_i - 1;\
+        }\
+    }
+
+
 //Used only in tests
 #define MLN_ADD_LOGS_IMPLEMENTATION(mln_data_ptr, msg) \
     {\
-    const size_t mln_msg_sizeof = sizeof msg;\
+    size_t mln_msg_sizeof;\
+    MLN_GET_CHAR_ARRAY_LENGTH(msg, mln_msg_sizeof)\
     if(mln_msg_sizeof > 1){\
-        const size_t mln_msg_size = mln_msg_sizeof - 1;\
     \
         if(mln_data_ptr->logs_length + mln_msg_sizeof >= mln_data_ptr->logs_size){\
-            MLN_RESIZE_LOGS_IMPLEMENTATION(mln_data_ptr, mln_data_ptr->logs_length + mln_msg_sizeof) \
+            MLN_RESIZE_LOGS_IMPLEMENTATION(mln_data_ptr, mln_data_ptr->logs_length + mln_msg_sizeof + (mln_data_ptr->logs_length == 0 ? 1 : 0)) \
         }\
     \
-        const size_t mln_starting_index = mln_data_ptr->logs_length == 0 ? 0 : mln_data_ptr->logs_length - 1;\
+        const size_t mln_starting_index = mln_data_ptr->logs_length;\
         bool is_last_zero = false;\
         size_t mln_i = 0;\
-        for(; mln_i < mln_msg_size; ++mln_i){\
+        for(; mln_i < mln_msg_sizeof; ++mln_i){\
             is_last_zero = msg[mln_i] == '\0';\
             mln_data_ptr->logs[mln_starting_index + mln_i] = msg[mln_i];\
         }\
         if(!is_last_zero){\
             mln_data_ptr->logs[mln_starting_index + mln_i] = '\0';\
         }\
-        mln_data_ptr->logs_length = sizeof mln_data_ptr->logs;\
+        MLN_GET_CHAR_ARRAY_LENGTH(mln_data_ptr->logs, mln_data_ptr->logs_length)\
     }\
     }
 
@@ -275,13 +319,13 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     }
 
 //used only in tests
-#define MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, expression, assert_failed, format) \
+#define MLN_DEFAULT_ASSERT_IMPLEMENTATION(expected, actual_value, msg, expression, assert_failed, format, fail_type) \
     {\
     const bool mln_result = expression;\
     if(mln_result){\
         mln_data_ptr->passes++;\
     }else{\
-        MLN_FAILm(msg, expected, actual_value, format, ##assert_failed) \
+        MLN_FAILm_IMPLEMENTATION_##fail_type((mln_data_ptr), mln_verbosity, msg, expected, actual_value, #format, #assert_failed)\
     }\
     }
 
@@ -328,13 +372,14 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     }
 
 //used only in tests
-#define MLN_FAILm_IMPLEMENTATION(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed) \
+#define MLN_FAILm_IMPLEMENTATION_GENERIC(mln_data_ptr, mln_verbosity, msg, expected, actual, format, assert_failed) \
     {\
     mln_data_ptr->fails++;\
     MLN_ADD_LOGS(mln_data_ptr, msg) \
     const char* mln_format_string = format;\
-    const size_t mln_format_size = sizeof mln_format_string;\
-    printf(#assert_failed " failed! ");\
+    size_t mln_format_size;\
+    MLN_GET_CHAR_ARRAY_LENGTH(mln_format_string, mln_format_size)\
+    printf("%s%s", assert_failed, " failed! ");\
     if(mln_format_size >= 2 && mln_verbosity > 0)\
     {\
         printf("Expected [");\

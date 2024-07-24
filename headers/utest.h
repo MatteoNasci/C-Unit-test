@@ -66,7 +66,7 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     Can be used inside a test, will automatically fail the current test and stop the execution
     */
     #define FAIL() MLN_FAIL()
-    #define FAILm(msg, expected, actual, format, assert_failed) MLN_FAILm(msg, expected, actual, format, assert_failed)
+    #define FAILm(msg) MLN_FAILm(msg)
     /*
     Can be used inside a test, will automatically pass the current test and stop the execution
     */
@@ -111,46 +111,88 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define ASSERT_NNULLm(value, msg) MLN_ASSERT_NNULLm(value, msg)
     /*
     Assert that expected == actual_value
+    Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_EQ(expected, actual_value) MLN_ASSERT_EQ(expected, actual_value) 
     #define ASSERT_EQm(expected, actual_value, msg) MLN_ASSERT_EQm(expected, actual_value, msg)
     /*
-    Assert that expected == actual_value, if they are not equal then the 2 arguments will be printed out based on the given format (printf)
+    Assert that expected == actual_value, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
     Expected and actual_value might be evaluated more than once
     */
-    #define ASSERT_EQ_FORMAT(expected, actual_value, format) MLN_ASSERT_EQ_FORMAT(expected, actual_value, format)
-    #define ASSERT_EQ_FORMATm(expected, actual_value, format, msg) MLN_ASSERT_EQ_FORMATm(expected, actual_value, format, msg)
+    #define ASSERT_EQf(expected, actual_value, format) MLN_ASSERT_EQf(expected, actual_value, format)
+    #define ASSERT_EQfm(expected, actual_value, format, msg) MLN_ASSERT_EQfm(expected, actual_value, format, msg)
     /*
     Assert that expected != actual_value
+    Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_NEQ(expected, actual_value) MLN_ASSERT_NEQ(expected, actual_value)
     #define ASSERT_NEQm(expected, actual_value, msg) MLN_ASSERT_NEQm(expected, actual_value, msg)
     /*
+    Assert that expected != actual_value, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
+    Expected and actual_value might be evaluated more than once
+    */
+    #define ASSERT_NEQf(expected, actual_value, format) MLN_ASSERT_NEQf(expected, actual_value, format)
+    #define ASSERT_NEQfm(expected, actual_value, format, msg) MLN_ASSERT_NEQfm(expected, actual_value, format, msg)
+    /*
     Assert that expected > actual_value
+    Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_GT(expected, actual_value) MLN_ASSERT_GT(expected, actual_value)
     #define ASSERT_GTm(expected, actual_value, msg) MLN_ASSERT_GTm(expected, actual_value, msg)
     /*
+    Assert that expected > actual_value, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
+    Expected and actual_value might be evaluated more than once
+    */
+    #define ASSERT_GTf(expected, actual_value, format) MLN_ASSERT_GTf(expected, actual_value, format)
+    #define ASSERT_GTfm(expected, actual_value, format, msg) MLN_ASSERT_GTfm(expected, actual_value, format, msg)
+    /*
     Assert that expected >= actual_value
+    Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_GTE(expected, actual_value) MLN_ASSERT_GTE(expected, actual_value)
     #define ASSERT_GTEm(expected, actual_value, msg) MLN_ASSERT_GTEm(expected, actual_value, msg)
     /*
+    Assert that expected >= actual_value, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
+    Expected and actual_value might be evaluated more than once
+    */
+    #define ASSERT_GTEf(expected, actual_value, format) MLN_ASSERT_GTEf(expected, actual_value, format)
+    #define ASSERT_GTEfm(expected, actual_value, format, msg) MLN_ASSERT_GTEfm(expected, actual_value, format, msg)
+    /*
     Assert that expected < actual_value
+    Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_LT(expected, actual_value) MLN_ASSERT_LT(expected, actual_value)
     #define ASSERT_LTm(expected, actual_value, msg) MLN_ASSERT_LTm(expected, actual_value, msg)
     /*
+    Assert that expected < actual_value, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
+    Expected and actual_value might be evaluated more than once
+    */
+    #define ASSERT_LTf(expected, actual_value, format) MLN_ASSERT_LTf(expected, actual_value, format)
+    #define ASSERT_LTfm(expected, actual_value, format, msg) MLN_ASSERT_LTfm(expected, actual_value, format, msg)
+    /*
     Assert that expected <= actual_value
+    Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_LTE(expected, actual_value) MLN_ASSERT_LTE(expected, actual_value)
     #define ASSERT_LTEm(expected, actual_value, msg) MLN_ASSERT_LTEm(expected, actual_value, msg)
+    /*
+    Assert that expected <= actual_value, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
+    Expected and actual_value might be evaluated more than once
+    */
+    #define ASSERT_LTEf(expected, actual_value, format) MLN_ASSERT_LTEf(expected, actual_value, format)
+    #define ASSERT_LTEfm(expected, actual_value, format, msg) MLN_ASSERT_LTEfm(expected, actual_value, format, msg)
     /*
     Assert that expected - tollerance <= actual_value <= expected + tollerance
     Expected and actual_value might be evaluated more than once
     */
     #define ASSERT_IN_RANGE(expected, actual_value, tollerance) MLN_ASSERT_IN_RANGE(expected, actual_value, tollerance)
     #define ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg) MLN_ASSERT_IN_RANGEm(expected, actual_value, tollerance, msg)
+    /*
+    Assert that expected - tollerance <= actual_value <= expected + tollerance, if the expression is false then the 2 arguments will be printed out based on the given format (printf)
+    Expected and actual_value might be evaluated more than once
+    */
+    #define ASSERT_IN_RANGEf(expected, actual_value, tollerance, format) MLN_ASSERT_IN_RANGEf(expected, actual_value, tollerance, format)
+    #define ASSERT_IN_RANGEfm(expected, actual_value, tollerance, format, msg) MLN_ASSERT_IN_RANGEfm(expected, actual_value, tollerance, format, msg)
     /*
     Assert that the first size bytes of the strings are equal (strncmp(expected, actual_value, size) == 0).
     Expected and actual_value might be evaluated more than once
