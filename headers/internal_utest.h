@@ -283,7 +283,7 @@ Assert that EXPECTED and ACTUAL are equal, using the greatest_equal_cb function 
     if(mln_msg_sizeof > 1){\
     \
         if(mln_data_ptr->logs_length + mln_msg_sizeof >= mln_data_ptr->logs_size){\
-            MLN_RESIZE_LOGS_IMPLEMENTATION(mln_data_ptr, mln_data_ptr->logs_length + mln_msg_sizeof + (mln_data_ptr->logs_length == 0 ? 1 : 0)) \
+            MLN_RESIZE_LOGS_IMPLEMENTATION(mln_data_ptr, mln_data_ptr->logs_length + mln_msg_sizeof + 1) \
         }\
     \
         const size_t mln_starting_index = mln_data_ptr->logs_length;\
