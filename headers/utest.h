@@ -6,7 +6,7 @@
 
 /* 
 Defining MLN_REDUCE_MACROS_TO_FUNCTIONS will force most MACROS to use function calls instead, reducing code size
-If MLN_REDUCE_MACROS_TO_FUNCTIONS is defined you need to put MLN_TEST_FUNC_DEFINITIONS in a .c file for the test functions definitions
+If MLN_REDUCE_MACROS_TO_FUNCTIONS is defined you need to put MLN_TEST_FUNC_DEFINITIONS in a .c file after including this header for the test functions definitions
 If MLN_REDUCE_MACROS_TO_FUNCTIONS is not defined MLN_TEST_FUNC_DEFINITIONS will be empty
 */
 /*
@@ -116,7 +116,7 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define ASSERT_MEM_EQ(expected, actual, size, stop_test_on_fail) MLN_ASSERT_MEM_EQ(expected, actual, size, stop_test_on_fail)
     #define ASSERT_MEM_EQm(expected, actual, size, msg, stop_test_on_fail) MLN_ASSERT_MEM_EQm(expected, actual, size, msg, stop_test_on_fail)
     /*
-    Assert that the first size bytes of memory pointed to by expected and actual are equal. If not, print a hexdump and highlight the lines and individual bytes which do not match.
+    Assert that the first size bytes of memory pointed to by expected and actual are not entirely equal. If not, print a hexdump and highlight the lines and individual bytes which do match.
     Expected and actual might be evaluated more than once
     */
     #define ASSERT_MEM_NEQ(expected, actual, size, stop_test_on_fail) MLN_ASSERT_MEM_NEQ(expected, actual, size, stop_test_on_fail)
