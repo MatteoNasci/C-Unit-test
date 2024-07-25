@@ -431,11 +431,11 @@ int main(int argc, char**argv){
 
 
     printf("Needs to do an entire series of tests without interfering with the current one\n");
-    test();
+    test(1);
 
     POST_TESTS
 
     printf("Needs to do an entire series of tests without interfering with the previous two\n");
-    test();
+    test(0);
 
 }

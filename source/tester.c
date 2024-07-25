@@ -377,10 +377,10 @@ MLN_TEST(testing_assert_skip_prefix2,
     MLN_PASS()
 )
 
-void test(){
+void test(const size_t verbosity){
     MLN_PRE_TESTS
 
-    MLN_SET_LOGS_VERBOSITY(2)
+    MLN_SET_LOGS_VERBOSITY(verbosity)
 
     printf("Needs to pass\n");
     MLN_RUN_TEST(testing_passes2)
