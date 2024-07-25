@@ -511,9 +511,9 @@ typedef struct test_results{
     printf("Tests passed: %zu/%zu. Total asserts passed: %zu/%zu\n", mln_results.total_test_passes, mln_total_test_results, mln_results.total_passes, mln_total_results);\
     printf("Tests skiped: %zu/%zu. Total asserts skipped: %zu/%zu\n", mln_results.total_test_skips, mln_total_test_results, mln_results.total_skips, mln_total_results);\
     printf("Tests failed: %zu/%zu. Total asserts failed: %zu/%zu\n", mln_results.total_test_fails, mln_total_test_results, mln_results.total_fails, mln_total_results);\
-    printf("Tests failed percentage: %Lf%%, Asserts failed percentage: %Lf%% \n", \
-    ((long double)(mln_results.total_test_fails) / mln_total_test_results) * 100.0, \
-    ((long double)(mln_results.total_fails) / mln_total_results) * 100.0);\
+    const long double mln_final_test_failed_perc = mln_total_test_results == 0 ? 0 : ((long double)(mln_results.total_test_fails) / mln_total_test_results) * 100.0);\
+    const long double mln_final_assert_failed_perc = mln_total_results == 0 ? 0 : ((long double)(mln_results.total_fails) / mln_total_results) * 100.0);\
+    printf("Tests failed percentage: %Lf%%, Asserts failed percentage: %Lf%% \n", mln_final_test_failed_perc, mln_final_assert_failed_perc);\
     printf("Approximate seconds elapsed: %.3lf\n", (double)(mln_end_time - mln_start_time) / CLOCKS_PER_SEC);\
     printf("Press any keys to close...\n");\
     getchar();
