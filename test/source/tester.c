@@ -5,15 +5,11 @@
 #define MLN_REMOVE_TESTS_PREFIXES
 
 #include "utest.h"
-#include "test_headers/tester.h"
+#include "tester.h"
 
-MLN_TEST_FUNC_DEFINITIONS
+extern void hello();
 
-void hello(){
-    printf("Hello\n");
-}
-
-TEST(testing_passes , 
+TEST(testing_passes2 , 
     ASSERT(true, false)
     ASSERTm(5, "msg\n", false)
     ASSERT_FALSE(false, false)
@@ -86,7 +82,7 @@ TEST(testing_passes ,
     ASSERT_STR_LTE("expected", "expected", false)
     ASSERT_STR_LTEm("axpected", "ectual_value", "msg\n", false)
 )
-TEST(testing_passes_prefix , 
+TEST(testing_passes_prefix2 , 
     MLN_ASSERT(true, false)
     MLN_ASSERTm(5, "msg\n", false)
     MLN_ASSERT_FALSE(false, false)
@@ -160,7 +156,7 @@ TEST(testing_passes_prefix ,
     MLN_ASSERT_STR_LTEm("axpected", "ectual_value", "msg\n", false)
 )
 
-TEST(testing_fails , 
+TEST(testing_fails2 , 
     ASSERT(false, false)
     ASSERTm(false, "msg\n", false)
     ASSERT_FALSE(true, false)
@@ -235,7 +231,7 @@ TEST(testing_fails ,
     ASSERT_STR_GTEm("axpected", "ectual_value", "msg\n", true)
     PASS()
 )
-TEST(testing_fails_prefix , 
+TEST(testing_fails_prefix2 , 
     MLN_ASSERT(false, false)
     MLN_ASSERTm(false, "msg\n", false)
     MLN_ASSERT_FALSE(true, false)
@@ -311,131 +307,123 @@ TEST(testing_fails_prefix ,
     MLN_PASS()
 )
 
-TEST(testing_bypass_pass, 
+TEST(testing_bypass_pass2, 
     PASS()
     FAIL(false)
 )
-TEST(testing_bypass_pass_prefix, 
+TEST(testing_bypass_pass_prefix2, 
     MLN_PASS()
     MLN_FAIL(false)
 )
-TEST(testing_bypass_skip, 
+TEST(testing_bypass_skip2, 
     SKIP()
     FAIL(false)
 )
-TEST(testing_bypass_skip_prefix, 
+TEST(testing_bypass_skip_prefix2, 
     MLN_SKIP()
     MLN_FAIL(false)
 )
-MLN_TEST(testing_bypass_skipm, 
+MLN_TEST(testing_bypass_skipm2, 
     SKIPm("msgbigbigBigBBBBIIIIGGGG HELLO asfg a\n")
     FAIL(false)
 )
-MLN_TEST(testing_bypass_skipm_prefix, 
+MLN_TEST(testing_bypass_skipm_prefix2, 
     MLN_SKIPm("msg\n")
     MLN_FAIL(false)
 )
-MLN_TEST(testing_bypass_fail, 
+MLN_TEST(testing_bypass_fail2, 
     FAIL(false)
     PASS()
 )
-MLN_TEST(testing_bypass_fail_prefix, 
+MLN_TEST(testing_bypass_fail_prefix2, 
     MLN_FAIL(false)
     MLN_PASS()
 )
-MLN_TEST(testing_bypass_failm, 
+MLN_TEST(testing_bypass_failm2, 
     int adios = 2;
     FAILm("msg\n", false)
     PASS()
 )
-MLN_TEST(testing_bypass_failm_prefix, 
+MLN_TEST(testing_bypass_failm_prefix2, 
     MLN_FAILm("msg\n", false)
     MLN_PASS()
 )
 
-MLN_TEST(testing_bypass_fail_skip, 
+MLN_TEST(testing_bypass_fail_skip2, 
     FAIL(true)
     PASS()
 )
-MLN_TEST(testing_bypass_fail_skip_prefix, 
+MLN_TEST(testing_bypass_fail_skip_prefix2, 
     MLN_FAIL(true)
     MLN_PASS()
 )
-MLN_TEST(testing_bypass_failm_skip, 
+MLN_TEST(testing_bypass_failm_skip2, 
     int adios = 2;
     FAILm("msg\n", true)
     PASS()
 )
-MLN_TEST(testing_bypass_failm_skip_prefix, 
+MLN_TEST(testing_bypass_failm_skip_prefix2, 
     MLN_FAILm("msg\n", true)
     MLN_PASS()
 )
-MLN_TEST(testing_assert_skip, 
+MLN_TEST(testing_assert_skip2, 
     ASSERT(true, true)
     ASSERT(false, true)
     PASS()
 )
-MLN_TEST(testing_assert_skip_prefix, 
+MLN_TEST(testing_assert_skip_prefix2, 
     MLN_ASSERT(true, true)
     MLN_ASSERT(false, true)
     MLN_PASS()
 )
 
-int main(int argc, char**argv){
-    PRE_TESTS
+void test(const size_t verbosity){
+    MLN_PRE_TESTS
 
-    SET_LOGS_VERBOSITY(2)
+    MLN_SET_LOGS_VERBOSITY(verbosity)
 
     printf("Needs to pass\n");
-    RUN_TEST(testing_passes)
+    MLN_RUN_TEST(testing_passes2)
     printf("Needs to pass\n");
-    RUN_TEST(testing_passes_prefix)
+    MLN_RUN_TEST(testing_passes_prefix2)
     printf("Needs to pass\n");
-    RUN_TEST(testing_bypass_pass)
+    MLN_RUN_TEST(testing_bypass_pass2)
     printf("Needs to pass\n");
-    RUN_TEST(testing_bypass_pass_prefix)
+    MLN_RUN_TEST(testing_bypass_pass_prefix2)
 
     printf("Needs to skip\n");
-    RUN_TEST(testing_bypass_skip)
+    MLN_RUN_TEST(testing_bypass_skip2)
     printf("Needs to skip\n");
-    RUN_TEST(testing_bypass_skip_prefix)
+    MLN_RUN_TEST(testing_bypass_skip_prefix2)
     printf("Needs to skip\n");
-    RUN_TEST(testing_bypass_skipm)
+    MLN_RUN_TEST(testing_bypass_skipm2)
     printf("Needs to skip\n");
-    RUN_TEST(testing_bypass_skipm_prefix)
+    MLN_RUN_TEST(testing_bypass_skipm_prefix2)
 
     printf("Needs to fail\n");
-    RUN_TEST(testing_bypass_fail)
+    MLN_RUN_TEST(testing_bypass_fail2)
     printf("Needs to fail\n");
-    RUN_TEST(testing_bypass_fail_prefix)
+    MLN_RUN_TEST(testing_bypass_fail_prefix2)
     printf("Needs to fail\n");
-    RUN_TEST(testing_bypass_failm)
+    MLN_RUN_TEST(testing_bypass_failm2)
     printf("Needs to fail\n");
-    RUN_TEST(testing_bypass_failm_prefix)
+    MLN_RUN_TEST(testing_bypass_failm_prefix2)
     printf("Needs to fail with no passes\n");
-    RUN_TEST(testing_bypass_fail_skip)
+    MLN_RUN_TEST(testing_bypass_fail_skip2)
     printf("Needs to fail with no passes\n");
-    RUN_TEST(testing_bypass_fail_skip_prefix)
+    MLN_RUN_TEST(testing_bypass_fail_skip_prefix2)
     printf("Needs to fail with no passes\n");
-    RUN_TEST(testing_bypass_failm_skip)
+    MLN_RUN_TEST(testing_bypass_failm_skip2)
     printf("Needs to fail with no passes\n");
-    RUN_TEST(testing_bypass_failm_skip_prefix)
+    MLN_RUN_TEST(testing_bypass_failm_skip_prefix2)
     printf("Needs to fail with 1 pass\n");
-    RUN_TEST(testing_assert_skip)
+    MLN_RUN_TEST(testing_assert_skip2)
     printf("Needs to fail with 1 pass\n");
-    RUN_TEST(testing_assert_skip_prefix)
+    MLN_RUN_TEST(testing_assert_skip_prefix2)
     printf("Needs to fail all and not reach the final pass\n");
-    RUN_TEST(testing_fails)
+    MLN_RUN_TEST(testing_fails2)
     printf("Needs to fail all and not reach the final pass\n");
-    RUN_TEST(testing_fails_prefix)
+    MLN_RUN_TEST(testing_fails_prefix2)
 
-
-    printf("Needs to do an entire series of tests without interfering with the current one\n");
-    test(1);
-
-    POST_TESTS
-
-    printf("Needs to do an entire series of tests without interfering with the previous two\n");
-    test(0);
-
+    MLN_POST_TESTS
 }

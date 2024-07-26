@@ -5,11 +5,15 @@
 #define MLN_REMOVE_TESTS_PREFIXES
 
 #include "utest.h"
-#include "test_headers/tester.h"
+#include "tester.h"
 
-extern void hello();
+MLN_TEST_FUNC_DEFINITIONS
 
-TEST(testing_passes2 , 
+void hello(){
+    printf("Hello\n");
+}
+
+TEST(testing_passes , 
     ASSERT(true, false)
     ASSERTm(5, "msg\n", false)
     ASSERT_FALSE(false, false)
@@ -82,7 +86,7 @@ TEST(testing_passes2 ,
     ASSERT_STR_LTE("expected", "expected", false)
     ASSERT_STR_LTEm("axpected", "ectual_value", "msg\n", false)
 )
-TEST(testing_passes_prefix2 , 
+TEST(testing_passes_prefix , 
     MLN_ASSERT(true, false)
     MLN_ASSERTm(5, "msg\n", false)
     MLN_ASSERT_FALSE(false, false)
@@ -156,7 +160,7 @@ TEST(testing_passes_prefix2 ,
     MLN_ASSERT_STR_LTEm("axpected", "ectual_value", "msg\n", false)
 )
 
-TEST(testing_fails2 , 
+TEST(testing_fails , 
     ASSERT(false, false)
     ASSERTm(false, "msg\n", false)
     ASSERT_FALSE(true, false)
@@ -231,7 +235,7 @@ TEST(testing_fails2 ,
     ASSERT_STR_GTEm("axpected", "ectual_value", "msg\n", true)
     PASS()
 )
-TEST(testing_fails_prefix2 , 
+TEST(testing_fails_prefix , 
     MLN_ASSERT(false, false)
     MLN_ASSERTm(false, "msg\n", false)
     MLN_ASSERT_FALSE(true, false)
@@ -307,123 +311,131 @@ TEST(testing_fails_prefix2 ,
     MLN_PASS()
 )
 
-TEST(testing_bypass_pass2, 
+TEST(testing_bypass_pass, 
     PASS()
     FAIL(false)
 )
-TEST(testing_bypass_pass_prefix2, 
+TEST(testing_bypass_pass_prefix, 
     MLN_PASS()
     MLN_FAIL(false)
 )
-TEST(testing_bypass_skip2, 
+TEST(testing_bypass_skip, 
     SKIP()
     FAIL(false)
 )
-TEST(testing_bypass_skip_prefix2, 
+TEST(testing_bypass_skip_prefix, 
     MLN_SKIP()
     MLN_FAIL(false)
 )
-MLN_TEST(testing_bypass_skipm2, 
+MLN_TEST(testing_bypass_skipm, 
     SKIPm("msgbigbigBigBBBBIIIIGGGG HELLO asfg a\n")
     FAIL(false)
 )
-MLN_TEST(testing_bypass_skipm_prefix2, 
+MLN_TEST(testing_bypass_skipm_prefix, 
     MLN_SKIPm("msg\n")
     MLN_FAIL(false)
 )
-MLN_TEST(testing_bypass_fail2, 
+MLN_TEST(testing_bypass_fail, 
     FAIL(false)
     PASS()
 )
-MLN_TEST(testing_bypass_fail_prefix2, 
+MLN_TEST(testing_bypass_fail_prefix, 
     MLN_FAIL(false)
     MLN_PASS()
 )
-MLN_TEST(testing_bypass_failm2, 
+MLN_TEST(testing_bypass_failm, 
     int adios = 2;
     FAILm("msg\n", false)
     PASS()
 )
-MLN_TEST(testing_bypass_failm_prefix2, 
+MLN_TEST(testing_bypass_failm_prefix, 
     MLN_FAILm("msg\n", false)
     MLN_PASS()
 )
 
-MLN_TEST(testing_bypass_fail_skip2, 
+MLN_TEST(testing_bypass_fail_skip, 
     FAIL(true)
     PASS()
 )
-MLN_TEST(testing_bypass_fail_skip_prefix2, 
+MLN_TEST(testing_bypass_fail_skip_prefix, 
     MLN_FAIL(true)
     MLN_PASS()
 )
-MLN_TEST(testing_bypass_failm_skip2, 
+MLN_TEST(testing_bypass_failm_skip, 
     int adios = 2;
     FAILm("msg\n", true)
     PASS()
 )
-MLN_TEST(testing_bypass_failm_skip_prefix2, 
+MLN_TEST(testing_bypass_failm_skip_prefix, 
     MLN_FAILm("msg\n", true)
     MLN_PASS()
 )
-MLN_TEST(testing_assert_skip2, 
+MLN_TEST(testing_assert_skip, 
     ASSERT(true, true)
     ASSERT(false, true)
     PASS()
 )
-MLN_TEST(testing_assert_skip_prefix2, 
+MLN_TEST(testing_assert_skip_prefix, 
     MLN_ASSERT(true, true)
     MLN_ASSERT(false, true)
     MLN_PASS()
 )
 
-void test(const size_t verbosity){
-    MLN_PRE_TESTS
+int main(int argc, char**argv){
+    PRE_TESTS
 
-    MLN_SET_LOGS_VERBOSITY(verbosity)
+    SET_LOGS_VERBOSITY(2)
 
     printf("Needs to pass\n");
-    MLN_RUN_TEST(testing_passes2)
+    RUN_TEST(testing_passes)
     printf("Needs to pass\n");
-    MLN_RUN_TEST(testing_passes_prefix2)
+    RUN_TEST(testing_passes_prefix)
     printf("Needs to pass\n");
-    MLN_RUN_TEST(testing_bypass_pass2)
+    RUN_TEST(testing_bypass_pass)
     printf("Needs to pass\n");
-    MLN_RUN_TEST(testing_bypass_pass_prefix2)
+    RUN_TEST(testing_bypass_pass_prefix)
 
     printf("Needs to skip\n");
-    MLN_RUN_TEST(testing_bypass_skip2)
+    RUN_TEST(testing_bypass_skip)
     printf("Needs to skip\n");
-    MLN_RUN_TEST(testing_bypass_skip_prefix2)
+    RUN_TEST(testing_bypass_skip_prefix)
     printf("Needs to skip\n");
-    MLN_RUN_TEST(testing_bypass_skipm2)
+    RUN_TEST(testing_bypass_skipm)
     printf("Needs to skip\n");
-    MLN_RUN_TEST(testing_bypass_skipm_prefix2)
+    RUN_TEST(testing_bypass_skipm_prefix)
 
     printf("Needs to fail\n");
-    MLN_RUN_TEST(testing_bypass_fail2)
+    RUN_TEST(testing_bypass_fail)
     printf("Needs to fail\n");
-    MLN_RUN_TEST(testing_bypass_fail_prefix2)
+    RUN_TEST(testing_bypass_fail_prefix)
     printf("Needs to fail\n");
-    MLN_RUN_TEST(testing_bypass_failm2)
+    RUN_TEST(testing_bypass_failm)
     printf("Needs to fail\n");
-    MLN_RUN_TEST(testing_bypass_failm_prefix2)
+    RUN_TEST(testing_bypass_failm_prefix)
     printf("Needs to fail with no passes\n");
-    MLN_RUN_TEST(testing_bypass_fail_skip2)
+    RUN_TEST(testing_bypass_fail_skip)
     printf("Needs to fail with no passes\n");
-    MLN_RUN_TEST(testing_bypass_fail_skip_prefix2)
+    RUN_TEST(testing_bypass_fail_skip_prefix)
     printf("Needs to fail with no passes\n");
-    MLN_RUN_TEST(testing_bypass_failm_skip2)
+    RUN_TEST(testing_bypass_failm_skip)
     printf("Needs to fail with no passes\n");
-    MLN_RUN_TEST(testing_bypass_failm_skip_prefix2)
+    RUN_TEST(testing_bypass_failm_skip_prefix)
     printf("Needs to fail with 1 pass\n");
-    MLN_RUN_TEST(testing_assert_skip2)
+    RUN_TEST(testing_assert_skip)
     printf("Needs to fail with 1 pass\n");
-    MLN_RUN_TEST(testing_assert_skip_prefix2)
+    RUN_TEST(testing_assert_skip_prefix)
     printf("Needs to fail all and not reach the final pass\n");
-    MLN_RUN_TEST(testing_fails2)
+    RUN_TEST(testing_fails)
     printf("Needs to fail all and not reach the final pass\n");
-    MLN_RUN_TEST(testing_fails_prefix2)
+    RUN_TEST(testing_fails_prefix)
 
-    MLN_POST_TESTS
+
+    printf("Needs to do an entire series of tests without interfering with the current one\n");
+    test(1);
+
+    POST_TESTS
+
+    printf("Needs to do an entire series of tests without interfering with the previous two\n");
+    test(0);
+
 }

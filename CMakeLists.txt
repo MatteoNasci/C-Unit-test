@@ -4,9 +4,9 @@ project(MLN_Tests C)
 
 set(CMAKE_C_STANDARD 99)
 
-include_directories(headers)
+include_directories(headers test/headers)
 
-set(testsrc source/main.c source/tester.c)
+set(testsrc test/source/main.c test/source/tester.c)
 
 add_executable(Tester1 ${testsrc})
 add_executable(Tester2 ${testsrc})
