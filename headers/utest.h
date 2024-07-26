@@ -27,9 +27,9 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define PRE_TESTS MLN_PRE_TESTS
     /*
     To be used once at the end of the function/main where all the tests will be performed
-    Ending point of the testing procedure
+    Ending point of the testing procedure. If wait_input == true then the test will wait untill the user presses a key, to allow you to verify the results on the terminal
     */
-    #define POST_TESTS MLN_POST_TESTS
+    #define POST_TESTS(wait_input) MLN_POST_TESTS(wait_input)
     /*
     Sets the level of verbosity of the tests logs. 
     0 = only minimum fails logs
@@ -47,7 +47,7 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     /*
     To be used to define test functions. The arguments are the function name and the body of the function.
     Example:
-    MLN_DEFINE_TEST(my_test,
+    MLN_TEST(my_test,
         int a = 0;
         int b = 0;
         MLN_ASSERT_EQ(a, 0)

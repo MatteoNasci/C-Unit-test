@@ -50,7 +50,7 @@ typedef struct test_results{
 
 #define MLN_PRE_TESTS MLN_PRE_TESTS_IMPLEMENTATION
 
-#define MLN_POST_TESTS MLN_POST_TESTS_IMPLEMENTATION
+#define MLN_POST_TESTS(wait_input) MLN_POST_TESTS_IMPLEMENTATION(wait_input)
 
 #define MLN_TEST(func_name, ...) MLN_TEST_IMPLEMENTATION(MLN_GET_TEST_NAME_FROM_FUNC(func_name), __VA_ARGS__)
 
@@ -632,7 +632,7 @@ typedef struct test_results{
     MLN_RESET_DATA(&mln_data) 
 
 //used only in main
-#define MLN_POST_TESTS_IMPLEMENTATION         \
+#define MLN_POST_TESTS_IMPLEMENTATION(wait_input)        \
     const size_t mln_total_results = mln_results.total_passes + mln_results.total_fails + mln_results.total_skips;\
     const size_t mln_total_test_results = mln_results.total_test_passes + mln_results.total_test_fails + mln_results.total_test_skips;\
     const clock_t mln_end_time = clock();\
@@ -644,7 +644,9 @@ typedef struct test_results{
     const long double mln_final_assert_failed_perc = mln_total_results == 0 ? 0 : ((long double)(mln_results.total_fails) / mln_total_results) * 100.0;\
     printf("Tests failed percentage: %Lf%%, Asserts failed percentage: %Lf%% \n", mln_final_test_failed_perc, mln_final_assert_failed_perc);\
     printf("Approximate seconds elapsed: %.3lf\n", (double)(mln_end_time - mln_start_time) / CLOCKS_PER_SEC);\
-    printf("Press any keys to close...\n");\
-    getchar();
+    if(wait_input){\
+        printf("Press any keys to close...\n");\
+        getchar();\
+    }
 
 #endif

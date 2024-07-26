@@ -387,7 +387,7 @@ MLN_TEST(testing_assert_skip_skip_prefix2,
     MLN_PASS()
 )
 
-void test(const size_t verbosity){
+void test(const size_t verbosity, const bool wait_input){
     MLN_PRE_TESTS
 
     MLN_SET_LOGS_VERBOSITY(verbosity)
@@ -439,6 +439,6 @@ void test(const size_t verbosity){
     printf("Needs to fail all and not reach the final pass\n");
     MLN_RUN_TEST(testing_fails_prefix2)
 
-    MLN_POST_TESTS
+    MLN_POST_TESTS(wait_input)
 
 }
