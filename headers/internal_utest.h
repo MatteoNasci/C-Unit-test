@@ -439,7 +439,7 @@ typedef struct test_results{
     {\
         mln_data_ptr->fails++;\
         MLN_ADD_LOGS(mln_data_ptr, msg) \
-        printf("%s%s", assert_failed, " failed! ");\
+        printf("Assert n%zu. %s%s", (mln_data_ptr->passes + mln_data_ptr->skips + mln_data_ptr->fails), assert_failed, " failed! ");\
         const char* mln_format_string = format;\
         size_t mln_format_size;\
         MLN_GET_CHAR_ARRAY_LENGTH(mln_format_string, mln_format_size)\
