@@ -30,7 +30,7 @@ typedef struct test_results{
     size_t total_test_fails;
     size_t total_test_skips;
 } mln_test_results;
-
+//TODO: improve logging
 #define MLN_STRINGIFY(A) #A
 #define MLN_STRINGIFY_NX(A) MLN_STRINGIFY(A)
 #define MLN_DEFAULT_FAIL_MSG MLN_DEFAULT_FAIL_MSG_D
@@ -145,6 +145,14 @@ typedef struct test_results{
 #define MLN_ASSERT_IN_RANGEf(expected, actual_value, tollerance, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_RANGEf), format, GENERIC, true)
 
 #define MLN_ASSERT_IN_RANGEfm(expected, actual_value, tollerance, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, msg, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_RANGEfm), format, GENERIC, true)
+
+#define MLN_ASSERT_IN_NRANGE(expected, actual_value, tollerance) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), #expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGE), "%s", STRING, true)
+
+#define MLN_ASSERT_IN_NRANGEm(expected, actual_value, tollerance, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), #expected, #actual_value, msg, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEm), "%s", STRING, true)
+
+#define MLN_ASSERT_IN_NRANGEf(expected, actual_value, tollerance, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, MLN_DEFAULT_FAIL_MSG, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEf), format, GENERIC, true)
+
+#define MLN_ASSERT_IN_NRANGEfm(expected, actual_value, tollerance, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, msg, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEfm), format, GENERIC, true)
 
 #define MLN_ASSERT_STRN_EQ(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) == 0), MLN_STRINGIFY_NX(##MLN_ASSERT_STRN_EQ), "%s", STRING, true)
 
@@ -273,6 +281,14 @@ typedef struct test_results{
 #define MLN_ASSERT_IN_RANGEfi(expected, actual_value, tollerance, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, MLN_DEFAULT_FAIL_MSG, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_RANGEfi), format, GENERIC, false)
 
 #define MLN_ASSERT_IN_RANGEfmi(expected, actual_value, tollerance, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, msg, (expected - tollerance <= actual_value) && (expected + tollerance >= actual_value), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_RANGEfmi), format, GENERIC, false)
+
+#define MLN_ASSERT_IN_NRANGEi(expected, actual_value, tollerance) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), #expected, #actual_value, MLN_DEFAULT_FAIL_MSG, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEi), "%s", STRING, false)
+
+#define MLN_ASSERT_IN_NRANGEmi(expected, actual_value, tollerance, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), #expected, #actual_value, msg, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEmi), "%s", STRING, false)
+
+#define MLN_ASSERT_IN_NRANGEfi(expected, actual_value, tollerance, format) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, MLN_DEFAULT_FAIL_MSG, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEfi), format, GENERIC, false)
+
+#define MLN_ASSERT_IN_NRANGEfmi(expected, actual_value, tollerance, format, msg) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, msg, (actual_value < expected - tollerance) || (actual_value > expected + tollerance), MLN_STRINGIFY_NX(##MLN_ASSERT_IN_NRANGEfmi), format, GENERIC, false)
 
 #define MLN_ASSERT_STRN_EQi(expected, actual_value, size) MLN_DEFAULT_ASSERT_IMPLEMENTATION((mln_data_ptr), expected, actual_value, MLN_DEFAULT_FAIL_MSG, (strncmp(expected, actual_value, size) == 0), MLN_STRINGIFY_NX(##MLN_ASSERT_STRN_EQi), "%s", STRING, false)
 
