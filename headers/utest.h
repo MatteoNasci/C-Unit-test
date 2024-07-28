@@ -4,6 +4,10 @@
 
 #include "internal_utest.h"
 
+#define MLN_TESTS_VERSION_MAJOR 0
+#define MLN_TESTS_VERSION_MINOR 3
+#define MLN_TESTS_VERSION_PATCH 0
+
 /* 
 Defining MLN_REDUCE_MACROS_TO_FUNCTIONS will force most MACROS to use function calls instead, reducing code size
 If MLN_REDUCE_MACROS_TO_FUNCTIONS is defined you need to put MLN_TEST_FUNC_DEFINITIONS in a .c file after including this header for the test functions definitions
@@ -32,9 +36,10 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define POST_TESTS(wait_input) MLN_POST_TESTS(wait_input)
     /*
     Sets the level of verbosity of the tests logs. 
-    0 = only minimum fails logs
-    1 = fails logs, minimum skip and pass logs
-    2 = all logs
+    MINIMUM = only minimum fail logs
+    LOW = same as MEDIUM at the moment
+    MEDIUM = fail and skip logs
+    HIGH = all logs
     verbosity might be evaluated multiple times in this macro
     MLN_PRE_TESTS must appear once before this MACRO can be used
     */
@@ -55,6 +60,33 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     )
     */
     #define TEST(func_name, ...) MLN_TEST(func_name, __VA_ARGS__)
+    /*
+    To be used to group up several MLN_RUN_TEST together. To be defined the same way MLN_TEST are defined.
+    Example:
+    MLN_SUITE(my_suite,
+        MLN_RUN_TEST(my_test)
+        MLN_RUN_TEST(my_other_test)
+        ...
+        MLN_RUN_TEST(my_n_test)
+    )
+
+    ...
+    void main(){
+
+        MLN_PRE_TESTS
+
+        MLN_RUN_SUITE(suite_name)
+
+        MLN_RUN_TEST(whatever)
+
+        ...
+    */
+    #define SUITE(suite_name, ...) MLN_SUITE(suite_name, __VA_ARGS__)
+    /*
+    To be used when performing the tests. The suite_name must have a matching MLN_SUITE(suite_name)
+    MLN_PRE_TESTS must appear once before any tests can be executed
+    */
+    #define RUN_SUITE(suite_name) MLN_RUN_SUITE(suite_name)
 
     //
     //BYPASSES

@@ -403,15 +403,7 @@ MLN_TEST(testing_assert_skip_skip_prefix2,
     MLN_PASS()
 )
 
-void test(const size_t verbosity, const bool wait_input){
-    MLN_PRE_TESTS
-
-    MLN_SET_LOGS_VERBOSITY(verbosity)
-
-    printf("Needs to pass\n");
-    MLN_RUN_TEST(testing_passes2)
-    printf("Needs to pass\n");
-    MLN_RUN_TEST(testing_passes_prefix2)
+MLN_SUITE(my_suite2, 
     printf("Needs to pass\n");
     RUN_TEST(testing_bypass_pass2)
     printf("Needs to pass\n");
@@ -421,6 +413,22 @@ void test(const size_t verbosity, const bool wait_input){
     RUN_TEST(testing_bypass_skip2)
     printf("Needs to skip\n");
     RUN_TEST(testing_bypass_skip_prefix2)
+)
+
+void test(const size_t verbosity, const bool wait_input){
+    MLN_PRE_TESTS
+
+    MLN_SET_LOGS_VERBOSITY(verbosity)
+
+    printf("Needs to pass\n");
+    MLN_RUN_TEST(testing_passes2)
+    printf("Needs to pass\n");
+    MLN_RUN_TEST(testing_passes_prefix2)
+
+
+    MLN_RUN_SUITE(my_suite2)
+
+
     printf("Needs to skip\n");
     RUN_TEST(testing_bypass_skipm2)
     printf("Needs to skip\n");

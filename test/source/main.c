@@ -407,15 +407,7 @@ MLN_TEST(testing_assert_skip_skip_prefix,
     MLN_PASS()
 )
 
-int main(int argc, char**argv){
-    PRE_TESTS
-
-    SET_LOGS_VERBOSITY(2)
-
-    printf("Needs to pass\n");
-    RUN_TEST(testing_passes)
-    printf("Needs to pass\n");
-    RUN_TEST(testing_passes_prefix)
+MLN_SUITE(my_suite, 
     printf("Needs to pass\n");
     RUN_TEST(testing_bypass_pass)
     printf("Needs to pass\n");
@@ -425,6 +417,20 @@ int main(int argc, char**argv){
     RUN_TEST(testing_bypass_skip)
     printf("Needs to skip\n");
     RUN_TEST(testing_bypass_skip_prefix)
+)
+
+int main(int argc, char**argv){
+    PRE_TESTS
+
+    SET_LOGS_VERBOSITY(HIGH)
+
+    printf("Needs to pass\n");
+    RUN_TEST(testing_passes)
+    printf("Needs to pass\n");
+    RUN_TEST(testing_passes_prefix)
+
+    MLN_RUN_SUITE(my_suite)
+
     printf("Needs to skip\n");
     RUN_TEST(testing_bypass_skipm)
     printf("Needs to skip\n");
@@ -461,11 +467,14 @@ int main(int argc, char**argv){
 
 
     printf("Needs to do an entire series of tests without interfering with the current one\n");
-    test(1, false);
+    test(MEDIUM, false);
 
     POST_TESTS(false)
 
     printf("Needs to do an entire series of tests without interfering with the previous two\n");
-    test(0, true);
+    test(LOW, false);
+
+    printf("Needs to do an entire series of tests without interfering with the previous three\n");
+    test(MINIMUM, true);
 
 }
