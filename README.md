@@ -1,4 +1,4 @@
-#include "headers/utest.h" and you're ready to test (utest.h needs to be able to include internal_utest.h).
+#include "headers/utest.h" and you're ready to test.
 
 #define MLN_REDUCE_MACROS_TO_FUNCTIONS before the include will force most MACROS to use function calls instead, reducing code size. In this case use MLN_TEST_FUNC_DEFINITIONS after the include once in your .c .
 
