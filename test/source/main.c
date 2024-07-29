@@ -475,6 +475,6 @@ int main(int argc, char**argv){
     test(LOW, false);
 
     printf("Needs to do an entire series of tests without interfering with the previous three\n");
-    test(MINIMUM, true);
+    test(MINIMUM, false);
 
 }
