@@ -1,2 +1,6 @@
 build/
 *.sh
+out/
+.vscode/
+ext/
+CMakePresets.json
