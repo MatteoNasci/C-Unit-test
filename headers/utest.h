@@ -10,7 +10,7 @@
 #define MLN_TESTS_VERSION_MAJOR 0
 #define MLN_TESTS_VERSION_MINOR 4
 #define MLN_TESTS_VERSION_PATCH 1
-#define MLN_TESTS_VERSION_TWEAK 0
+#define MLN_TESTS_VERSION_TWEAK 1
 
 /* 
 Defining MLN_REDUCE_MACROS_TO_FUNCTIONS will force most MACROS to use function calls instead, reducing code size
@@ -35,7 +35,7 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     #define PRE_TESTS MLN_PRE_TESTS
     /*
     To be used once at the end of the function/main where all the tests will be performed
-    Ending point of the testing procedure. If wait_input == true then the test will wait untill the user presses a key, to allow you to verify the results on the terminal
+    Ending point of the testing procedure. If wait_input == true then the test will wait untill the user presses a key to allow you to verify the results on the terminal
     */
     #define POST_TESTS(wait_input) MLN_POST_TESTS(wait_input)
     /*
@@ -59,8 +59,8 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     MLN_TEST(my_test,
         int a = 0;
         int b = 0;
-        MLN_ASSERT_EQ(a, 0)
-        MLN_ASSERT_NEQ(b, 1)
+        MLN_ASSERT_EQ(0, a)
+        MLN_ASSERT_NEQ(1, b)
     )
     */
     #define TEST(func_name, ...) MLN_TEST(func_name, __VA_ARGS__)
@@ -84,6 +84,9 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
         MLN_RUN_TEST(whatever)
 
         ...
+
+        MLN_POST_TESTS(false)
+    }
     */
     #define SUITE(suite_name, ...) MLN_SUITE(suite_name, __VA_ARGS__)
     /*
@@ -99,16 +102,16 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     /*All Bypasses must be used inside a MLN_TEST*/
 
     /*
-    Can be used inside a test, will automatically fail the current test and stop the execution
+    Can be used inside a test, will automatically fail and stop the current test
     */
     #define FAIL() MLN_FAIL()
     #define FAILm(msg) MLN_FAILm(msg)
     /*
-    Can be used inside a test, will automatically pass the current test and stop the execution
+    Can be used inside a test, will automatically pass and stop the current test
     */
     #define PASS() MLN_PASS()
     /*
-    Can be used inside a test, will automatically skip the current test and stop the execution
+    Can be used inside a test, will automatically skip and stop the current test
     */
     #define SKIP() MLN_SKIP()
     #define SKIPm(msg) MLN_SKIPm(msg)
@@ -117,11 +120,11 @@ A list of all usable MACROS and comments on how the MACROS work can be found ins
     //ASSERTS
     //
 
-    /*Failing an assertion will stop the execution of the current test and will result in a failed test. 
-    All assertions have a message variant (m), which logs a string message in case of a fail. 
-    There's also a format variant (f) which allows toy to specify a format for the expected-actual values when printinf them on printf when the assertion fails.
+    /*Failing an assertion will stop the execution of the current test (unless the 'i' variant is used) and will result in a failed test. 
+    All assertions have a message variant (m), which logs a custom string message in case of a fail (only needed if you require a specific message to be shown, the test will use a default fail msg that will be shown regardless of this variant usage). 
+    There's also a format variant (f) which allows you to specify a format for the expected-actual values for the printf function when the assertion fails (by default if not used the values will be converted to strings).
     Another variant is the ignore fail (i), which makes it so that the assert will not stop the test execution when failing, allowing the test to continue (the failed assert and the overall test will still be counted as a fail)
-    The variants can be found at the end of the assert MACRO, like MLN_ASSERT_FALSEmi , and their order in the MACRO name is: f -> m -> i. All combinations are present for most asserts (some asserts do not support the 'f' variant).
+    The variants can be found at the end of the assert MACRO (for example MLN_ASSERT_FALSEmi) and their order in the MACRO name is: f -> m -> i. All combinations are present for most asserts (some asserts do not support the 'f' variant).
     All Assertions must be used inside a MLN_TEST*/
 
     /*
